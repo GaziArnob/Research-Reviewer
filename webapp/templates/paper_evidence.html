@@ -1,0 +1,23 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon %}
+{% block tab %}
+{% if res and res.claims %}
+<div class="card"><div class="card-head"><h2>Claims the authors make</h2><span class="badge b-info">Language-model draft</span></div>
+  <p class="muted">Each claim is kept only if its quote exists in the paper.</p>
+  {% for c in res.claims %}
+    <div class="finding"><p><strong>{{ c.text }}</strong></p>
+      <div class="quote">“{{ c.quote }}” <span class="muted small">{% if c.page %}— page {{ c.page }}{% endif %}{% if c.section %}, {{ c.section }}{% endif %}</span></div></div>
+  {% endfor %}
+</div>
+{% elif res %}
+<div class="empty">{{ icon('search') }}<h3>No claims extracted</h3><p>Claims need the language-model pass. Start a new review with it turned on.</p></div>
+{% else %}<div class="empty">{{ icon('clock') }}<h3>Not ready yet</h3></div>{% endif %}
+{% if res %}
+<div class="card"><h2>Structure</h2>
+  <p class="muted">Sections found in the PDF:</p>
+  <p>{% for s in res.stats.get('sections', []) %}<span class="badge b-mute">{{ s }}</span> {% endfor %}</p>
+  <dl class="kv"><dt>Figures</dt><dd>{{ res.stats.get('figures', 0) }}</dd><dt>Tables</dt><dd>{{ res.stats.get('tables', 0) }}</dd>
+    <dt>Hidden text removed</dt><dd>{{ res.stats.get('hidden_spans', 0) }}</dd></dl>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base_public.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+{% from "_macros.html" import csrf_input with context %}
+<div class="auth"><div class="card">
+  <h1>Sign in</h1>
+  <p class="muted">Welcome back.</p>
+  {% if error %}<div class="alert a-bad" role="alert"><div>{{ error }}</div></div>{% endif %}
+  <form method="post" action="/login" novalidate>
+    {{ csrf_input() }}<input type="hidden" name="next" value="{{ next }}">
+    <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" value="{{ email or '' }}" required autofocus></div>
+    <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
+  </form>
+  {% if allow_signup %}<p class="muted small">New here? <a href="/signup">Create an account</a></p>{% endif %}
+</div></div>
+{% endblock %}

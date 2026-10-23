@@ -1,0 +1,47 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, alert, finding %}
+{% block tab %}
+{% if res and ready %}
+<div class="grid grid-4">
+  <div class="stat"><div class="n">{{ res.stats.get('words', 0) }}</div><div class="l">Words</div></div>
+  <div class="stat"><div class="n">{{ res.stats.get('pages', 0) }}</div><div class="l">Pages</div></div>
+  <div class="stat"><div class="n">{{ res.stats.get('references', 0) }}</div><div class="l">References found</div></div>
+  <div class="stat"><div class="n">{{ counts.get('major', 0) }} / {{ counts.get('minor', 0) }}</div><div class="l">Major / minor findings</div></div>
+</div>
+
+{% if res.understanding %}
+<div class="card mt"><div class="card-head"><h2>Summary</h2><span class="badge b-info">Language-model draft</span></div>
+  <p>{{ res.understanding.summary }}</p>
+  <dl class="kv">
+    {% if res.understanding.problem %}<dt>Problem</dt><dd>{{ res.understanding.problem }}</dd>{% endif %}
+    {% if res.understanding.contributions %}<dt>Claimed contributions</dt><dd><ul class="mb0">{% for c in res.understanding.contributions %}<li>{{ c }}</li>{% endfor %}</ul></dd>{% endif %}
+    {% if res.understanding.conclusion %}<dt>Conclusion</dt><dd>{{ res.understanding.conclusion }}</dd>{% endif %}
+  </dl>
+</div>
+{% else %}
+<div class="card mt"><div class="alert a-info" role="status">{{ icon('shield') }}<div>This review ran without the language-model pass, so there is no summary. Rule-based checks are in <a href="/app/papers/{{ sub.id }}/findings">Findings</a>.</div></div></div>
+{% endif %}
+
+<div class="card"><div class="card-head"><h2>What to look at first</h2><a href="/app/papers/{{ sub.id }}/findings">All findings</a></div>
+  {% if majors %}{% for f in majors %}{{ finding(f) }}{% endfor %}
+  {% else %}<p class="muted mb0">No major issue was found by the checks. That does not mean the paper has none: the checks cover structure, references, statistics and reproducibility keywords, and a small model's comments.</p>{% endif %}
+</div>
+
+<div class="grid grid-2">
+  <div class="card"><h3>{{ icon('clipboard') }} Next step</h3><p class="muted">Open the review form for your venue, check the prepared evidence, and write the review in your own words.</p>
+    <a class="btn btn-primary" href="/app/papers/{{ sub.id }}/form">Open review form</a></div>
+  <div class="card"><h3>{{ icon('chat') }} Something unclear?</h3><p class="muted">Ask the paper a question and see the passages the answer comes from.</p>
+    <a class="btn" href="/app/papers/{{ sub.id }}/ask">Ask the paper</a></div>
+</div>
+
+{% if res.scores %}
+<details class="card"><summary>Draft scores (optional, not reliable)</summary>
+  <div class="alert a-warn">{{ icon('alert') }}<div>On a benchmark of 20 ICLR 2017 papers, the local model's scores did not track human reviewers. Ratings and recommendations are never filled in on venue forms. Shown only for transparency.</div></div>
+  <div class="grid grid-4">
+    {% for label, v in [('Technical', res.scores.technical), ('Novelty', res.scores.novelty), ('Methodology', res.scores.methodology), ('Clarity', res.scores.clarity)] %}
+      <div class="stat"><div class="n">{{ v }}</div><div class="l">{{ label }}</div></div>{% endfor %}
+  </div>
+</details>
+{% endif %}
+{% elif sub.status in ('done',) %}<div class="empty">No result stored.</div>{% endif %}
+{% endblock %}

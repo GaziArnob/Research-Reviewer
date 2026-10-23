@@ -1,0 +1,34 @@
+{
+  "id": "ieee_cpmt_transactions",
+  "name": "IEEE CPMT Transactions (society-specific evaluation form)",
+  "provenance": {
+    "level": "verified",
+    "checked": "2026-10-24",
+    "official_urls": ["https://ewh.ieee.org/soc/cpmt/trans/reviewer_guide.html"],
+    "notes": "Evaluation dimensions, the quality rating scale and the recommendation options come from the reviewer guide of the IEEE Components, Packaging and Manufacturing Technology (CPMT) Society Transactions. This is one society's guide (an older page): other IEEE journals differ, so use it as an example of an IEEE society form, not as the IEEE standard. The guide says the 'Paper Profile' form is designed to stimulate thought and does not list its questions."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "discouraged",
+    "notes": ["This society guide predates the AI rules, but IEEE-wide guidance (Author Center, IEEE Access) forbids using AI tools to generate or draft reviews and forbids sharing manuscript content with public AI platforms. LLM-written content is therefore hidden in this export. Turn the online checks off."]
+  },
+  "sections": [
+    {"key": "originality", "label": "Originality", "type": "text", "fill": "prior_work", "source": "official",
+     "guidance": "Creativity or inventiveness: new concepts, techniques, methods or applications."},
+    {"key": "significance", "label": "Significance", "type": "text", "fill": null, "source": "official",
+     "guidance": "Importance or worth of the work, judged by you as a subject expert."},
+    {"key": "completeness", "label": "Completeness", "type": "text", "fill": "claims_evidence", "source": "official",
+     "guidance": "Is the work a unified whole with interdependent parts, from formulation through conclusions?"},
+    {"key": "references", "label": "References", "type": "text", "fill": "quality", "source": "official",
+     "guidance": "Adequate in number, accurate in content, and showing how the work relates to prior work."},
+    {"key": "organization", "label": "Organization", "type": "text", "fill": "other_aspects", "source": "official",
+     "guidance": "Title, abstract, index terms, body, symbols, bibliography, illustrations, length and style."},
+    {"key": "clarity", "label": "Clarity", "type": "text", "fill": "clarity", "source": "official",
+     "guidance": "Clarity of writing, tables, graphs and illustrations."},
+    {"key": "quality", "label": "Quality rating", "type": "choice", "choices": ["Poor", "Marginal", "Acceptable", "Good", "Prize paper"], "fill": null, "source": "official",
+     "guidance": "Left for the human reviewer."},
+    {"key": "recommendation", "label": "Recommendation", "type": "choice", "choices": ["Acceptable for publication", "Needs revision", "Should be rejected"], "fill": null, "source": "official",
+     "guidance": "All recommendations, and especially rejections, need specific, critical comments. Left for the human reviewer."}
+  ],
+  "checklist": []
+}

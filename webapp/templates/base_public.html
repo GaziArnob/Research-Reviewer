@@ -1,0 +1,32 @@
+{% from "_macros.html" import icon, alert %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf" content="{{ csrf }}">
+  <title>{% block title %}{{ brand }}{% endblock %} · {{ brand }}</title>
+  <meta name="description" content="{% block desc %}{{ tagline }}. Checks, evidence-linked comments and venue-ready review forms. You write the review.{% endblock %}">
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+{% include "_sprite.html" %}
+<header class="top"><div class="in">
+  <a class="brand" href="/"><img class="logo" src="/static/logo.svg" alt="">{{ brand }}</a>
+  <nav aria-label="Main">
+    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/trust">Trust &amp; privacy</a><a href="/plans">Plans</a>
+  </nav>
+  {% if user %}<a class="btn btn-primary btn-sm" href="/app">Open app</a>
+  {% else %}<a class="btn btn-ghost btn-sm" href="/login">Sign in</a>{% if allow_signup %}<a class="btn btn-primary btn-sm" href="/signup">Get started</a>{% endif %}{% endif %}
+</div></header>
+<main>
+  {% for f in flashes %}<div class="wrap">{{ alert(f.kind, f.text) }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="foot"><div class="wrap in">
+  <div>© {{ brand }}. The tool assists; the reviewer decides.</div>
+  <div><a href="/trust">Trust &amp; privacy</a><a href="/legal/privacy">Privacy</a><a href="/legal/terms">Terms</a><a href="mailto:{{ support }}">Contact</a></div>
+</div></footer>
+<script src="/static/js/app.js" defer></script>
+</body>
+</html>

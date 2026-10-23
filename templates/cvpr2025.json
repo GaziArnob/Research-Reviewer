@@ -1,0 +1,39 @@
+{
+  "id": "cvpr2025",
+  "name": "CVPR review (2025 criteria, 2026 training structure)",
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": ["https://cvpr.thecvf.com/Conferences/2025/ReviewerGuidelines", "https://cvpr.thecvf.com/Conferences/2026/ReviewerTrainingMaterial"],
+    "notes": "The 2025 guidelines page lists the evaluation criteria (below) but no form fields or rating scale. The review structure (summary, strengths, weaknesses, constructive suggestions, justified recommendation) is from the official CVPR 2026 reviewer training page, i.e. another year. That page does not define the rating scale or form layout: sample justifications there use the labels Strong Accept, Weak Accept, Borderline, Weak Reject, Reject, but it does not say these are the form options, so no scale is filled in."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "not_stated",
+    "notes": ["The CVPR 2025 reviewer guidelines say not to use large language models to write reviews or meta-reviews. LLM-written content is therefore hidden in this export; only rule-based checks and quote-verified evidence are shown."]
+  },
+  "criteria": [
+    "Accepted papers should be technically sound and make a contribution to the field.",
+    "Weigh novelty and potential impact together with reported performance; beating the state of the art is not required.",
+    "Minor flaws that are easy to correct should not be a reason to reject.",
+    "Be specific and detailed and say how the authors can improve.",
+    "Back claims that the work 'has been done before' with specific references and an explanation of how close it is.",
+    "Point out unclear sections and suggest clarifications.",
+    "Do not reject solely for missing citations to unreviewed work or for not beating an arXiv paper.",
+    "Consult supplementary material only if it helps understand the contribution.",
+    "Be courteous and constructive."
+  ],
+  "sections": [
+    {"key": "summary", "label": "Concise summary (2-4 sentences)", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "What the paper does and claims. (Structure from the 2026 training page.)"},
+    {"key": "strengths", "label": "Strengths", "type": "text", "fill": "strengths", "source": "official",
+     "guidance": "Specific, evidence-based points."},
+    {"key": "weaknesses", "label": "Weaknesses", "type": "text", "fill": "weaknesses", "source": "official",
+     "guidance": "Specific, evidence-based concerns."},
+    {"key": "suggestions", "label": "Constructive suggestions", "type": "text", "fill": "other_aspects", "source": "official",
+     "guidance": "How the authors could address the weaknesses."},
+    {"key": "recommendation", "label": "Justified recommendation and rating", "type": "text", "fill": null, "source": "unverified",
+     "guidance": "The scale is not defined on the official pages checked: use the live form. The justification must be specific, evidence-based and connected to the rating. Left for the human reviewer."}
+  ],
+  "checklist": []
+}

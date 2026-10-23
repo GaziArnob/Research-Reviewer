@@ -1,0 +1,27 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, finding %}
+{% block tab %}
+{% if res %}
+  {% if not (sub.options and sub.options.online) %}
+    <div class="alert a-info" role="status">{{ icon('shield') }}<div>Online checks were off for this paper, so there is no related-work search.</div></div>
+  {% endif %}
+  {% if related_findings %}<div class="card"><h2>Overlap and missing citations</h2>{% for f in related_findings %}{{ finding(f) }}{% endfor %}</div>{% endif %}
+  {% if res.related %}
+  <div class="card"><h2>Related papers found</h2>
+    <p class="muted">By title and abstract search. Many may be unrelated: use them as a starting point.</p>
+    <div class="table-wrap"><table class="t"><thead><tr><th>Title</th><th>Year</th><th>Source</th></tr></thead><tbody>
+      {% for p in res.related %}<tr><td>{% if p.url %}<a href="{{ p.url }}" rel="noopener noreferrer" target="_blank">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</td>
+        <td>{{ p.year or '-' }}</td><td class="muted">{{ p.source }}</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+  {% endif %}
+  {% if related_years or ref_years %}
+  <div class="grid grid-2">
+    {% for title, data in [('Related papers by year', related_years), ('This paper’s references by year', ref_years)] %}{% if data %}
+    <div class="card"><h3>{{ title }}</h3>{% set peak = data.values() | max %}
+      <div class="bars">{% for y, n in data.items() %}<span class="muted">{{ y }}</span><progress max="{{ peak }}" value="{{ n }}">{{ n }}</progress><span>{{ n }}</span>{% endfor %}</div></div>
+    {% endif %}{% endfor %}
+  </div>
+  {% endif %}
+  {% if not res.related and not related_findings %}<div class="empty">{{ icon('book') }}<h3>Nothing to show</h3></div>{% endif %}
+{% else %}<div class="empty">{{ icon('clock') }}<h3>Not ready yet</h3></div>{% endif %}
+{% endblock %}

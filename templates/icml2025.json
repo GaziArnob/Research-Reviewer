@@ -1,0 +1,34 @@
+{
+  "id": "icml2025",
+  "name": "ICML 2025 main track review",
+  "provenance": {
+    "level": "verified",
+    "checked": "2026-10-24",
+    "official_urls": ["https://icml.cc/Conferences/2025/ReviewerInstructions"],
+    "notes": "Main Track form from the official 2025 reviewer instructions. That page does not state a confidence scale for the Main Track form, so none is included."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "not_stated",
+    "notes": ["The ICML 2025 reviewer page says use of generative AI tools (such as LLMs) for reviewing is strictly prohibited and that no submission or review content may be entered into them. LLM-written content is therefore hidden in this export; only rule-based checks and quote-verified evidence are shown."]
+  },
+  "sections": [
+    {"key": "summary", "label": "Summary", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "Summarize the main findings, results and ideas. This summary should not critique the paper."},
+    {"key": "claims_and_evidence", "label": "Claims and Evidence", "type": "text", "fill": "claims_evidence", "source": "official",
+     "guidance": "Are claims supported by clear and convincing evidence? Are methods and evaluation criteria appropriate? Which proofs and experimental designs did you check, and are they sound? Which supplementary parts did you review?"},
+    {"key": "relation_to_prior_works", "label": "Relation to Prior Works", "type": "text", "fill": "prior_work", "source": "official",
+     "guidance": "How do the key contributions relate to the broader literature? Which essential related works are missing? (Your familiarity with the literature is hidden from authors.)"},
+    {"key": "other_aspects", "label": "Other Aspects", "type": "text", "fill": "other_aspects", "source": "official",
+     "guidance": "Other strengths and weaknesses (originality, significance, clarity), and other comments such as typos."},
+    {"key": "questions_for_authors", "label": "Questions for Authors", "type": "text", "fill": "questions", "source": "official",
+     "guidance": "Numbered questions, only where the answer would likely change your evaluation. Say how each answer would change it."},
+    {"key": "ethical_issues", "label": "Ethical Issues", "type": "text", "fill": null, "source": "official",
+     "guidance": "Flag for ethics review? If so, choose the expertise (discrimination/bias/fairness; inappropriate applications and impact; privacy and security; legal compliance; research integrity; responsible research practice; other) and explain."},
+    {"key": "code_of_conduct", "label": "Code of Conduct Acknowledgement", "type": "ack", "fill": null, "source": "official", "guidance": ""},
+    {"key": "overall_recommendation", "label": "Overall Recommendation", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "Strong accept", "4": "Accept", "3": "Weak accept (leaning accept, could also be rejected)", "2": "Weak reject (leaning reject, could also be accepted)", "1": "Reject"}},
+     "guidance": "Left for the human reviewer."}
+  ],
+  "checklist": []
+}

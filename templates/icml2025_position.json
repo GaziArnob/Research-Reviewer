@@ -1,0 +1,41 @@
+{
+  "id": "icml2025_position",
+  "name": "ICML 2025 position paper review",
+  "provenance": {
+    "level": "verified",
+    "checked": "2026-10-24",
+    "official_urls": ["https://icml.cc/Conferences/2025/ReviewerInstructions"],
+    "notes": "Position Paper form from the official 2025 reviewer instructions."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "not_stated",
+    "notes": ["The ICML 2025 reviewer page says use of generative AI tools (such as LLMs) for reviewing is strictly prohibited and that no submission or review content may be entered into them. LLM-written content is therefore hidden in this export."]
+  },
+  "sections": [
+    {"key": "position", "label": "Position", "type": "choice", "choices": ["Yes", "No"], "fill": null, "source": "official",
+     "guidance": "Does the paper clearly state a position on a machine learning topic? Select No if it only describes new research without advocating a position."},
+    {"key": "position_in_title", "label": "Position In Title", "type": "choice", "choices": ["Yes", "No"], "fill": null, "source": "official",
+     "guidance": "Can a reader understand the position from the title alone?"},
+    {"key": "paper_summary", "label": "Paper Summary", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "Summarize the contributions and the advocated position, without critique."},
+    {"key": "strengths_weaknesses", "label": "Strengths and Weaknesses", "type": "text", "fill": "strengths_weaknesses", "source": "official",
+     "guidance": "Assess support, relevance, discussion potential and citations. Do not comment on whether you agree with the position."},
+    {"key": "support", "label": "Support", "type": "scale", "fill": null, "source": "official", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}}, "guidance": "How well the paper supports its position with clear reasoning and evidence."},
+    {"key": "significance", "label": "Significance", "type": "scale", "fill": null, "source": "official", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}}, "guidance": "How well the paper shows the position is important."},
+    {"key": "discussion_potential", "label": "Discussion Potential", "type": "scale", "fill": null, "source": "official", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}}, "guidance": "Potential to inspire constructive discussion in the ICML community."},
+    {"key": "argument_clarity", "label": "Argument Clarity", "type": "scale", "fill": "clarity", "source": "official", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}}, "guidance": "Clarity of presentation, including writing style."},
+    {"key": "related_work", "label": "Related Work", "type": "scale", "fill": "prior_work", "source": "official", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}}, "guidance": "Degree of discussion of, and citations to, relevant literature and events."},
+    {"key": "questions", "label": "Questions", "type": "text", "fill": "questions", "source": "official", "guidance": "Numbered questions, only where answers could change your opinion."},
+    {"key": "ethics_flag", "label": "Ethics Flag", "type": "choice", "choices": ["Yes", "No"], "fill": null, "source": "official", "guidance": ""},
+    {"key": "ethical_review_concerns", "label": "Ethical Review Concerns", "type": "text", "fill": null, "source": "official", "guidance": "Detailed explanation if flagged."},
+    {"key": "rating", "label": "Rating", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "Strong accept", "4": "Accept", "3": "Weak accept", "2": "Weak reject", "1": "Reject"}},
+     "guidance": "Left for the human reviewer."},
+    {"key": "confidence", "label": "Confidence", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "absolutely certain", "4": "confident but not absolutely certain", "3": "fairly confident", "2": "willing to defend, but likely missed central parts or related work", "1": "educated guess"}},
+     "guidance": "Left for the human reviewer."},
+    {"key": "code_of_conduct", "label": "Code of Conduct Acknowledgment", "type": "ack", "fill": null, "source": "official", "guidance": ""}
+  ],
+  "checklist": []
+}

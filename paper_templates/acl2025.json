@@ -1,0 +1,72 @@
+{
+  "id": "acl2025",
+  "name": "ACL / *ACL submission (ARR)",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://acl-org.github.io/ACLPUB/formatting.html",
+      "https://github.com/acl-org/acl-style-files"
+    ],
+    "notes": "Verified on the official ACL formatting page: A4, two columns, 2.5 cm margins, Times 11 pt (title 15 pt bold, section 12 pt bold, captions and abstract 10 pt), review versions have page numbers and a line ruler, long papers up to 8 pages of content for review (9 final), short papers 4 (5), references unlimited. Style files in github.com/acl-org/acl-style-files: acl.sty, acl_latex.tex, acl_natbib.bst. The review-mode option name is NOT stated on the pages checked (`[review]` is the usual one, unverified)."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [
+      "11pt"
+    ],
+    "preamble": [
+      "\\usepackage[review]{acl}",
+      "\\usepackage{times}",
+      "\\usepackage{latexsym}",
+      "\\usepackage[T1]{fontenc}",
+      "\\usepackage[utf8]{inputenc}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}"
+    ],
+    "author_style": "acl",
+    "keywords_style": "none",
+    "class_file": "acl.sty (download from github.com/acl-org/acl-style-files)",
+    "download": "https://github.com/acl-org/acl-style-files"
+  },
+  "layout": {
+    "paper": "a4",
+    "columns": 2,
+    "font": "Times New Roman",
+    "font_pt": 11,
+    "margins_cm": 2.5,
+    "layout_status": "official"
+  },
+  "limits": {
+    "main_pages": 8,
+    "text": "Long papers: 8 pages of content for review, 9 final. Short papers: 4 for review, 5 final. References unlimited; appendices do not count."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "Review versions have no acknowledgments; appendices follow the same anonymity rules."
+  },
+  "facts": [
+    {
+      "text": "A4, two columns, 2.5 cm margins, Times 11 pt.",
+      "status": "official"
+    },
+    {
+      "text": "Long paper 8 pages for review, short paper 4.",
+      "status": "official"
+    },
+    {
+      "text": "Style files acl.sty / acl_natbib.bst at github.com/acl-org/acl-style-files.",
+      "status": "official"
+    },
+    {
+      "text": "Review version: page numbers and ruler; no acknowledgments.",
+      "status": "official"
+    },
+    {
+      "text": "`\\usepackage[review]{acl}` option name.",
+      "status": "unverified"
+    }
+  ]
+}

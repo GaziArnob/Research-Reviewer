@@ -1,0 +1,70 @@
+{
+  "id": "neurips2025",
+  "name": "NeurIPS 2025 submission",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://neurips.cc/Conferences/2025/CallForPapers"
+    ],
+    "notes": "Verified on the official call for papers: 9 content pages including figures and tables (references, the paper checklist and appendices do not count), double-blind, a NeurIPS 2025 LaTeX style file with a `preprint` option for non-anonymous preprints, violations such as changed margins or fonts can be rejected without review. The page does NOT give the style file name or font details: the name neurips_2025 below is the usual one and is unverified. Download the style files from the official page."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [],
+    "preamble": [
+      "\\usepackage[utf8]{inputenc}",
+      "\\usepackage{neurips_2025}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}"
+    ],
+    "author_style": "neurips",
+    "keywords_style": "none",
+    "class_file": "neurips_2025.sty (download from NeurIPS; not in TeX Live)",
+    "download": "https://neurips.cc/Conferences/2025/CallForPapers"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 1,
+    "font": "Times",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": 9,
+    "text": "9 content pages including all figures and tables. References, the paper checklist and technical appendices are extra (camera-ready gets one more content page)."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "No identifying information and no acknowledgments at submission. Self-citations in the third person."
+  },
+  "facts": [
+    {
+      "text": "Nine content pages including figures and tables.",
+      "status": "official"
+    },
+    {
+      "text": "References, checklist and appendices do not count.",
+      "status": "official"
+    },
+    {
+      "text": "Double-blind; no acknowledgments at submission.",
+      "status": "official"
+    },
+    {
+      "text": "A `preprint` option exists for non-anonymous preprints.",
+      "status": "official"
+    },
+    {
+      "text": "Style file name neurips_2025.sty and `\\usepackage{neurips_2025}`.",
+      "status": "unverified"
+    },
+    {
+      "text": "Single column, Times 10 pt.",
+      "status": "unverified"
+    }
+  ]
+}

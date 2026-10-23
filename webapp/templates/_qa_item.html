@@ -1,0 +1,10 @@
+<div class="card">
+  <p class="muted small mb0">Question</p>
+  <h3>{{ item.q }}</h3>
+  <p>{{ item.a }}</p>
+  {% for w in item.warnings %}<div class="alert a-warn" role="alert"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><div>{{ w }}</div></div>{% endfor %}
+  {% if item.mode != 'agentic' %}<p class="muted small">Answered in {{ 'fallback' if item.mode == 'plain' else 'failed' }} mode.</p>{% endif %}
+  {% for c in item.cites %}
+    <details><summary>Passage P{{ c.id }} · {{ c.section }}{% if c.page %}, page {{ c.page }}{% endif %}</summary><div class="quote">{{ c.text }}</div></details>
+  {% endfor %}
+</div>

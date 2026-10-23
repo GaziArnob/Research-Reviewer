@@ -1,0 +1,36 @@
+{% macro icon(name) -%}<svg class="i" aria-hidden="true"><use href="#i-{{ name }}"/></svg>{%- endmacro %}
+
+{% macro status_badge(status) -%}
+  {% set m = {'done': ('b-ok', 'Ready'), 'queued': ('b-info', 'Queued'), 'running': ('b-info', 'Reviewing'),
+              'rejected': ('b-warn', 'Not reviewable'), 'failed': ('b-bad', 'Failed')} %}
+  <span class="badge {{ m[status][0] if status in m else 'b-mute' }}">{{ m[status][1] if status in m else status }}</span>
+{%- endmacro %}
+
+{% macro state_badge(state) -%}
+  {% set m = {'verified': ('b-ok', 'Quote verified'), 'needs_verification': ('b-warn', 'Verify'), 'uncertain': ('b-mute', 'Uncertain')} %}
+  <span class="badge {{ m[state][0] }}">{{ m[state][1] }}</span>
+{%- endmacro %}
+
+{% macro kind_badge(kind) -%}
+  {% set m = {'major': ('b-bad', 'Major'), 'minor': ('b-warn', 'Minor'), 'strength': ('b-ok', 'Strength'),
+              'question': ('b-info', 'Question'), 'flag': ('b-mute', 'Flag')} %}
+  <span class="badge {{ m[kind][0] }}">{{ m[kind][1] }}</span>
+{%- endmacro %}
+
+{% macro alert(kind, text) -%}
+  {% set ic = {'ok': 'check', 'warn': 'alert', 'bad': 'alert', 'info': 'shield'} %}
+  <div class="alert a-{{ kind }}" role="{{ 'alert' if kind in ('bad', 'warn') else 'status' }}">{{ icon(ic[kind]) }}<div>{{ text }}</div></div>
+{%- endmacro %}
+
+{% macro finding(f) -%}
+  <div class="finding sev-{{ f.kind }}" data-kind="{{ f.kind }}" data-module="{{ f.module }}" data-state="{{ f.status }}">
+    <div class="meta">{{ kind_badge(f.kind) }} {{ state_badge(f.status) }} <span class="badge b-mute">{{ f.module }}</span></div>
+    <p>{{ f.text }}</p>
+    {% for e in f.evidence[:2] %}
+      <div class="quote">“{{ e.quote }}”
+        <span class="muted small">{% if e.page %} — page {{ e.page }}{% endif %}{% if e.section %}{{ ', ' if e.page else ' — ' }}{{ e.section }}{% endif %}</span></div>
+    {% endfor %}
+  </div>
+{%- endmacro %}
+
+{% macro csrf_input() -%}<input type="hidden" name="csrf" value="{{ csrf }}">{%- endmacro %}

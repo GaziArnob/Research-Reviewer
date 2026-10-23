@@ -1,0 +1,37 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, alert, csrf_input with context %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Settings</h1><p class="muted">Your profile, plan and data.</p></div></div>
+<div class="grid grid-2">
+  <div class="card"><h2>Profile</h2>
+    <form method="post" action="/app/settings/profile">{{ csrf_input() }}
+      <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" value="{{ user.name }}" required></div>
+      <div class="field"><label>Email</label><input type="text" value="{{ user.email }}" disabled></div>
+      <div class="field"><label for="dv">Default venue</label><select id="dv" name="default_venue"><option value="">None</option>
+        {% for v in venues %}<option value="{{ v.id }}" {{ 'selected' if v.id == user.default_venue }}>{{ v.name }}</option>{% endfor %}</select></div>
+      <button class="btn btn-primary" type="submit">Save</button></form></div>
+
+  <div class="card"><h2>Plan and usage</h2>
+    <dl class="kv"><dt>Plan</dt><dd>{{ plan_of(user.plan).name }}</dd><dt>This month</dt><dd>{{ used }} paper{{ '' if used == 1 else 's' }}</dd>
+      <dt>Left</dt><dd>{{ 'unlimited' if quota is none else quota }}</dd><dt>Language model</dt><dd>{{ llm.name }}{% if llm.name != 'none' %} ({{ llm.model }}){% endif %}</dd></dl>
+    <p class="muted small">Billing is not set up yet. Contact <a href="mailto:{{ support }}">{{ support }}</a> to change plan.</p></div>
+
+  <div class="card"><h2>Password</h2>
+    <form method="post" action="/app/settings/password">{{ csrf_input() }}
+      <div class="field"><label for="current">Current password</label><input id="current" name="current" type="password" autocomplete="current-password" required></div>
+      <div class="field"><label for="new">New password</label><input id="new" name="new" type="password" autocomplete="new-password" required><div class="hint">At least 10 characters.</div></div>
+      <button class="btn" type="submit">Change password</button></form></div>
+
+  <div class="card"><h2>Your data</h2>
+    <p class="muted">Download everything stored about you: account details, results and questions.</p>
+    <a class="btn" href="/app/settings/export">{{ icon('download') }}Export my data (JSON)</a>
+    <hr>
+    <h3>Delete account</h3>
+    <p class="muted small">Deletes your account and every paper and result. This cannot be undone.</p>
+    <form method="post" action="/app/settings/delete-account" data-confirm="Delete your account and all data permanently?">{{ csrf_input() }}
+      <div class="field"><label for="confirm">Type DELETE</label><input id="confirm" name="confirm" type="text" autocomplete="off"></div>
+      <div class="field"><label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password"></div>
+      <button class="btn btn-danger" type="submit">{{ icon('trash') }}Delete my account</button></form></div>
+</div>
+{% endblock %}

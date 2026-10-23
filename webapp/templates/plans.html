@@ -1,0 +1,18 @@
+{% extends "base_public.html" %}
+{% block title %}Plans{% endblock %}
+{% block content %}
+<section class="section"><div class="wrap">
+  <h1 class="center">Plans</h1>
+  <p class="sub">{{ brand }} is in early access. Limits below are enforced in the app today. Prices and billing are not set up yet.</p>
+  <div class="grid grid-3">
+    {% for p in plans.values() %}
+    <div class="card"><h2>{{ p.name }}</h2><p class="muted">{{ p.description }}</p>
+      <ul><li>{% if p.papers_per_month %}{{ p.papers_per_month }} papers per month{% else %}Unlimited papers{% endif %}</li>
+          <li>Evidence-linked review and venue forms</li><li>Q&amp;A over each paper</li></ul>
+      {% if p.key == 'free' %}<a class="btn btn-primary" href="{{ '/signup' if allow_signup else '/login' }}">Start with Starter</a>
+      {% else %}<a class="btn" href="mailto:{{ support }}?subject={{ p.name }} plan">Talk to us</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div></section>
+{% endblock %}

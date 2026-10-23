@@ -1,0 +1,57 @@
+import requests
+from fastapi import APIRouter, Depends, Form, Request
+from fastapi.responses import RedirectResponse
+from sqlalchemy import func, select, text
+from sqlalchemy.orm import Session
+
+from core.config import settings as core_settings
+from core.llm.router import get_llm
+from webapp.db import Event, Submission, User, log_event
+from webapp.deps import csrf_protect, flash, get_db, render, require_admin
+from webapp.plans import PLANS
+from webapp.services import month_start
+
+router = APIRouter(prefix="/app/admin", dependencies=[Depends(require_admin)])
+
+
+def _ollama_status() -> str:
+    if core_settings.llm_provider != "ollama":
+        return f"not configured (LLM_PROVIDER={core_settings.llm_provider})"
+    try:
+        r = requests.get(core_settings.ollama_host.rstrip("/") + "/api/tags", timeout=2)
+        names = [m["name"] for m in r.json().get("models", [])]
+        return "running, models: " + (", ".join(names) or "none pulled")
+    except Exception:  # noqa: BLE001
+        return "not reachable"
+
+
+@router.get("")
+def admin(request: Request, user: User = Depends(require_admin), s: Session = Depends(get_db)):
+    users = list(s.execute(select(User, func.count(Submission.id)).outerjoin(Submission, Submission.user_id == User.id)
+                           .group_by(User.id).order_by(User.created_at)).all())
+    by_status = dict(s.execute(select(Submission.status, func.count()).group_by(Submission.status)).all())
+    month = s.scalar(select(func.count(Submission.id)).where(Submission.created_at >= month_start())) or 0
+    failed = list(s.scalars(select(Submission).where(Submission.status == "failed").order_by(Submission.created_at.desc()).limit(8)))
+    events = list(s.scalars(select(Event).order_by(Event.created_at.desc()).limit(15)))
+    try:
+        s.execute(text("SELECT 1"))
+        db_state = "connected"
+    except Exception:  # noqa: BLE001
+        db_state = "error"
+    system = {"Database": db_state, "Language model": f"{get_llm().name} / {getattr(get_llm(), 'model', '-')}",
+              "Ollama": _ollama_status(), "Online checks default": "on" if core_settings.online_checks else "off",
+              "OCR": "on" if core_settings.ocr_enabled else "off"}
+    return render(request, "admin.html", users=users, by_status=by_status, month=month, failed=failed, events=events,
+                  system=system, plan_keys=list(PLANS))
+
+
+@router.post("/users/{uid}/plan", dependencies=[Depends(csrf_protect)])
+def set_plan(request: Request, uid: int, plan: str = Form(""), user: User = Depends(require_admin), s: Session = Depends(get_db)):
+    target = s.get(User, uid)
+    if target is None or plan not in PLANS:
+        flash(request, "bad", "Unknown user or plan.")
+    else:
+        target.plan = plan
+        log_event(s, user.id, "plan_changed", None, {"user_id": uid, "plan": plan})
+        flash(request, "ok", f"{target.email} is now on the {PLANS[plan].name} plan.")
+    return RedirectResponse("/app/admin", status_code=303)

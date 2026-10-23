@@ -1,0 +1,66 @@
+{
+  "id": "cvpr2025",
+  "name": "CVPR 2025 submission",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://cvpr.thecvf.com/Conferences/2025/AuthorGuidelines",
+      "https://github.com/cvpr-org/author-kit"
+    ],
+    "notes": "Verified on the official author guidelines: 8 pages including figures and tables, extra pages only for cited references, double-blind. The author kit (github.com/cvpr-org/author-kit) has cvpr.sty and main.tex. The review option, columns, font and paper size are NOT stated on the pages checked: the front matter below follows the kit's usual structure and is unverified. Prefer to copy your text into the kit's own main.tex."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [
+      "10pt",
+      "twocolumn",
+      "letterpaper"
+    ],
+    "preamble": [
+      "\\usepackage[review]{cvpr}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}"
+    ],
+    "author_style": "cvpr",
+    "keywords_style": "none",
+    "class_file": "cvpr.sty (download the CVPR author kit)",
+    "download": "https://github.com/cvpr-org/author-kit/releases"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Times",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": 8,
+    "text": "8 pages including figures and tables. Additional pages only for cited references."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "No identifying acknowledgements or supplementary material; no links to sites that identify the authors."
+  },
+  "facts": [
+    {
+      "text": "Eight pages including figures and tables; extra pages only for references.",
+      "status": "official"
+    },
+    {
+      "text": "Double-blind; non-anonymous papers are rejected without review.",
+      "status": "official"
+    },
+    {
+      "text": "Author kit with cvpr.sty and main.tex.",
+      "status": "official"
+    },
+    {
+      "text": "`[review]` option, two columns, US Letter, 10 pt.",
+      "status": "unverified"
+    }
+  ]
+}

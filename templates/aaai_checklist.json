@@ -1,0 +1,67 @@
+{
+  "id": "aaai_checklist",
+  "name": "AAAI reproducibility checklist (review form not verified)",
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": ["https://aaai.org/conference/aaai/aaai-26/reproducibility-checklist/", "https://aaai.org/conference/aaai/aaai-26/instructions-for-aaai-26-reviewers/"],
+    "notes": "Checklist items and answer options are from the official AAAI-26 Reproducibility Checklist page (the AAAI-25 page was not retrieved; the two may differ). The section headings below come from the official 'Guidelines On Writing Helpful Reviews' on the AAAI-26 reviewer instructions page; that page frames them as questions to consider and does NOT list the form's field names or the rating and confidence scales, so no scale is filled in. 'Auto' checklist answers are keyword hints."
+  },
+  "policy": {
+    "llm_review_text": "not_stated",
+    "third_party_services": "not_stated",
+    "notes": ["The AAAI-26 reviewer instructions page checked says nothing about whether reviewers may use AI tools. AAAI ran an AI-assisted review pilot, so check the current policy before using AI-prepared content. The page asks for a depersonalized, professional tone without first-person references."]
+  },
+  "sections": [
+    {"key": "story", "label": "Story and motivation", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "What problem is addressed, what are the limits of the state of the art, do the empirical results support the claims, and what is the key novel technical contribution?"},
+    {"key": "technical", "label": "Technical presentation", "type": "text", "fill": "quality", "source": "official",
+     "guidance": "Is the approach sound and clearly described? Errors, unstated assumptions or missing details? Is it reproducible and are its limitations described?"},
+    {"key": "related", "label": "Related work", "type": "text", "fill": "prior_work", "source": "official",
+     "guidance": "Is the contribution placed in the context of previous and related work?"},
+    {"key": "evaluation", "label": "Evaluation", "type": "text", "fill": "claims_evidence", "source": "official",
+     "guidance": "Appropriate baselines, well-established metrics, suitable benchmarks or datasets, error analysis, replicable evaluation?"},
+    {"key": "strengths_weaknesses", "label": "Strengths and weaknesses (evidence-linked)", "type": "text", "fill": "strengths_weaknesses", "source": "official",
+     "guidance": "Supporting comments for the sections above."},
+    {"key": "suggestions", "label": "Suggestions for improvement", "type": "text", "fill": "other_aspects", "source": "official",
+     "guidance": "How the research or presentation could be improved."},
+    {"key": "recommendation", "label": "Rating, recommendation and confidence", "type": "text", "fill": null, "source": "unverified",
+     "guidance": "Field names and scales are not on the page checked: fill them in from the live form. Left for the human reviewer."}
+  ],
+  "checklist": [
+    {"id": "g1", "group": "General", "text": "Includes a conceptual outline and/or pseudocode of the AI methods introduced.", "options": ["yes", "partial", "no", "NA"], "auto": "pseudocode"},
+    {"id": "g2", "group": "General", "text": "Clearly separates opinions, hypotheses and speculation from objective facts and results.", "options": ["yes", "no"], "auto": null},
+    {"id": "g3", "group": "General", "text": "Provides well-marked pedagogical references for less-familiar readers.", "options": ["yes", "no"], "auto": null},
+
+    {"id": "t0", "group": "Theoretical contributions", "text": "Does the paper make theoretical contributions?", "options": ["yes", "no"], "auto": "theory", "gate": "theory"},
+    {"id": "t1", "group": "Theoretical contributions", "text": "Assumptions and restrictions are stated clearly and formally.", "options": ["yes", "partial", "no"], "auto": "assumptions", "requires": "theory"},
+    {"id": "t2", "group": "Theoretical contributions", "text": "Novel claims are stated formally, for example as theorem statements.", "options": ["yes", "partial", "no"], "auto": "theorem_statements", "requires": "theory"},
+    {"id": "t3", "group": "Theoretical contributions", "text": "Proofs of all novel claims are included.", "options": ["yes", "partial", "no"], "auto": "proofs", "requires": "theory"},
+    {"id": "t4", "group": "Theoretical contributions", "text": "Proof sketches or intuitions are given for complex or novel results.", "options": ["yes", "partial", "no"], "auto": null, "requires": "theory"},
+    {"id": "t5", "group": "Theoretical contributions", "text": "Appropriate citations to the theoretical tools used are given.", "options": ["yes", "partial", "no"], "auto": null, "requires": "theory"},
+    {"id": "t6", "group": "Theoretical contributions", "text": "Theoretical claims are demonstrated empirically.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "theory"},
+    {"id": "t7", "group": "Theoretical contributions", "text": "Experimental code used to eliminate or disprove claims is included.", "options": ["yes", "no", "NA"], "auto": null, "requires": "theory"},
+
+    {"id": "d0", "group": "Datasets", "text": "Does the paper rely on one or more datasets?", "options": ["yes", "no"], "auto": "datasets", "gate": "datasets"},
+    {"id": "d1", "group": "Datasets", "text": "A motivation is given for the selected datasets.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "datasets"},
+    {"id": "d2", "group": "Datasets", "text": "All novel datasets are included in a data appendix.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "datasets"},
+    {"id": "d3", "group": "Datasets", "text": "Novel datasets will be publicly available upon publication under a free research-use license.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "datasets"},
+    {"id": "d4", "group": "Datasets", "text": "Existing-literature datasets are accompanied by appropriate citations.", "options": ["yes", "no", "NA"], "auto": null, "requires": "datasets"},
+    {"id": "d5", "group": "Datasets", "text": "Existing-literature datasets are publicly available.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "datasets"},
+    {"id": "d6", "group": "Datasets", "text": "Non-public datasets are described in detail, with an explanation of why public alternatives are not scientifically satisficing.", "options": ["yes", "partial", "no", "NA"], "auto": null, "requires": "datasets"},
+
+    {"id": "c0", "group": "Computational experiments", "text": "Does the paper include computational experiments?", "options": ["yes", "no"], "auto": "experiments", "gate": "experiments"},
+    {"id": "c1", "group": "Computational experiments", "text": "States the number and range of hyperparameter values tried, and the selection criterion.", "options": ["yes", "partial", "no", "NA"], "auto": "hyperparameter_search", "requires": "experiments"},
+    {"id": "c2", "group": "Computational experiments", "text": "Code required for data pre-processing is included in the appendix.", "options": ["yes", "partial", "no"], "auto": null, "requires": "experiments"},
+    {"id": "c3", "group": "Computational experiments", "text": "All source code for conducting and analyzing experiments is included in a code appendix.", "options": ["yes", "partial", "no"], "auto": null, "requires": "experiments"},
+    {"id": "c4", "group": "Computational experiments", "text": "Source code will be publicly available upon publication under a free research-use license.", "options": ["yes", "partial", "no"], "auto": "code_available", "requires": "experiments"},
+    {"id": "c5", "group": "Computational experiments", "text": "Source code implementing new methods has comments referencing the paper.", "options": ["yes", "partial", "no"], "auto": null, "requires": "experiments"},
+    {"id": "c6", "group": "Computational experiments", "text": "The seed-setting method is described sufficiently for replication, if the algorithm is random.", "options": ["yes", "partial", "no", "NA"], "auto": "seeds", "requires": "experiments"},
+    {"id": "c7", "group": "Computational experiments", "text": "Computing infrastructure is specified (hardware, OS, software names and versions).", "options": ["yes", "partial", "no"], "auto": "compute", "requires": "experiments"},
+    {"id": "c8", "group": "Computational experiments", "text": "Evaluation metrics are formally described and their motivation explained.", "options": ["yes", "partial", "no"], "auto": "metrics", "requires": "experiments"},
+    {"id": "c9", "group": "Computational experiments", "text": "The number of algorithm runs per reported result is stated.", "options": ["yes", "no"], "auto": "num_runs", "requires": "experiments"},
+    {"id": "c10", "group": "Computational experiments", "text": "Analysis goes beyond single-dimensional summaries to include variation, confidence or distributional information.", "options": ["yes", "no"], "auto": "variance", "requires": "experiments"},
+    {"id": "c11", "group": "Computational experiments", "text": "Improvements or decreases are judged with appropriate statistical tests.", "options": ["yes", "partial", "no"], "auto": "statistical_tests", "requires": "experiments"},
+    {"id": "c12", "group": "Computational experiments", "text": "All final (hyper)parameters for each model or algorithm are listed.", "options": ["yes", "partial", "no", "NA"], "auto": "final_hyperparameters", "requires": "experiments"}
+  ]
+}

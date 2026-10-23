@@ -1,0 +1,9 @@
+{% extends "base_public.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="auth"><div class="card">
+  <p class="muted">Error {{ code }}</p><h1>{{ title }}</h1>
+  <p class="muted">{% if detail %}{{ detail }}{% elif code == 404 %}This page does not exist, or it is not yours to open.{% else %}Please go back and try again.{% endif %}</p>
+  <a class="btn btn-primary" href="{{ '/app' if user else '/' }}">Go to {{ 'dashboard' if user else 'home page' }}</a>
+</div></div>
+{% endblock %}

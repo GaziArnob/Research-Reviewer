@@ -1,0 +1,45 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, alert, csrf_input with context %}
+{% block title %}New review{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>New review</h1><p class="muted">Add up to {{ max_files }} papers. Processing starts right away and you can leave this page.</p></div></div>
+
+{% if quota is not none and quota == 0 %}{{ alert('bad', 'You have used all papers in your plan this month.') }}{% endif %}
+<form method="post" action="/app/new" enctype="multipart/form-data">
+  {{ csrf_input() }}
+  <div class="grid grid-2">
+    <div class="card">
+      <h2>1. The paper</h2>
+      <div class="field">
+        <div class="dropzone" id="dropzone">
+          {{ icon('upload') }}
+          <p><strong>Drop PDFs here</strong> or choose files</p>
+          <input id="files" name="files" type="file" accept="application/pdf,.pdf" multiple>
+          <p class="hint">PDF only, up to {{ max_mb }} MB each. Scanned PDFs are read with OCR, about 10 to 15 seconds per page.</p>
+          <p class="small" id="file-list"></p>
+        </div>
+      </div>
+      <div class="field"><label for="arxiv">or arXiv ids / links</label>
+        <textarea id="arxiv" name="arxiv" placeholder="1706.03762&#10;https://arxiv.org/abs/1810.04805"></textarea>
+        <div class="hint">One per line. The paper is downloaded from arxiv.org.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>2. Options</h2>
+      <div class="field"><label for="venue">Venue you review for</label>
+        <select id="venue" name="venue"><option value="">Choose later</option>
+          {% for v in venues %}<option value="{{ v.id }}" {{ 'selected' if v.id == user.default_venue }}>{{ v.name }}</option>{% endfor %}
+        </select><div class="hint">Used to open the right review form. You can change it on the paper page.</div></div>
+      <div class="field"><label class="check"><input type="checkbox" name="llm" value="1" {{ 'checked' if llm_ok else 'disabled' }}>
+        <span><strong>Language-model pass</strong><br><span class="muted small">Summary, claims and evidence-linked comments, about 3 minutes per paper on a laptop.
+          {% if not llm_ok %}<br>Not available: no model is configured on this server.{% endif %}
+          <br>Do not use it to draft your review where the venue forbids AI (ICML, ARR, CVPR, IEEE).</span></span></label></div>
+      <div class="field"><label class="check"><input type="checkbox" name="online" value="1" checked>
+        <span><strong>Online checks</strong><br><span class="muted small">Verify references and find related papers. Sends the title, one abstract sentence and reference titles to Crossref, Semantic Scholar, arXiv and OpenAlex.
+          Turn off if the venue discourages third-party services.</span></span></label></div>
+      <button class="btn btn-primary btn-lg" type="submit" {{ 'disabled' if quota is not none and quota == 0 }}>Start review</button>
+      <p class="hint">Only upload papers you are entitled to review. The PDF is deleted after processing.</p>
+    </div>
+  </div>
+</form>
+{% endblock %}

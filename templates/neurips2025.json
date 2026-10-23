@@ -1,0 +1,48 @@
+{
+  "id": "neurips2025",
+  "name": "NeurIPS 2025 main track review",
+  "provenance": {
+    "level": "verified",
+    "checked": "2026-10-24",
+    "official_urls": ["https://neurips.cc/Conferences/2025/ReviewerGuidelines"],
+    "notes": "Fields, scales and per-criterion questions come from the 'Review Form' section of the official 2025 reviewer guidelines. The NeurIPS Paper Checklist is not part of this template."
+  },
+  "policy": {
+    "llm_review_text": "not_stated",
+    "third_party_services": "not_stated",
+    "notes": ["The 2025 reviewer guidelines page says nothing about AI tools. It requires confidentiality of submissions (do not share them without program chair approval). Check the conference's current LLM policy before using AI-prepared content."]
+  },
+  "sections": [
+    {"key": "summary", "label": "Summary", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "Briefly summarize the paper and its contributions."},
+    {"key": "strengths_weaknesses", "label": "Strengths and Weaknesses", "type": "text", "fill": "strengths_weaknesses", "source": "official",
+     "guidance": "Discuss strengths and weaknesses with respect to quality, clarity, significance and originality."},
+    {"key": "quality", "label": "Quality", "type": "scale", "fill": "quality", "source": "official",
+     "scale": {"min": 1, "max": 4, "step": 1, "labels": {"4": "excellent", "3": "good", "2": "fair", "1": "poor"}},
+     "guidance": "Is the submission technically sound? Are claims well supported by theory or experiments? Are the methods appropriate? Is it complete or work in progress? Are the authors careful and honest about strengths and weaknesses?"},
+    {"key": "clarity", "label": "Clarity", "type": "scale", "fill": "clarity", "source": "official",
+     "scale": {"min": 1, "max": 4, "step": 1, "labels": {"4": "excellent", "3": "good", "2": "fair", "1": "poor"}},
+     "guidance": "Is the submission clearly written and well organized? Does it adequately inform the reader?"},
+    {"key": "significance", "label": "Significance", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 4, "step": 1, "labels": {"4": "excellent", "3": "good", "2": "fair", "1": "poor"}},
+     "guidance": "Are the results impactful? Will others use or build on them? Does it address a difficult task better than prior work, or advance understanding in a demonstrable way?"},
+    {"key": "originality", "label": "Originality", "type": "scale", "fill": "prior_work", "source": "official",
+     "scale": {"min": 1, "max": 4, "step": 1, "labels": {"4": "excellent", "3": "good", "2": "fair", "1": "poor"}},
+     "guidance": "Does it give new insights or deepen understanding? Is it clear how it differs from prior work, with citations? Evaluating existing methods can also be original."},
+    {"key": "questions", "label": "Questions", "type": "text", "fill": "questions", "source": "official",
+     "guidance": "Questions for the authors."},
+    {"key": "limitations", "label": "Limitations", "type": "text", "fill": "limitations", "source": "official",
+     "guidance": "Have the authors adequately addressed limitations? If yes, say so; otherwise give constructive suggestions."},
+    {"key": "overall", "label": "Overall", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 6, "step": 1, "labels": {"6": "Strong Accept", "5": "Accept", "4": "Borderline accept (use sparingly)", "3": "Borderline reject (use sparingly)", "2": "Reject", "1": "Strong Reject"}},
+     "guidance": "Overall score. Left for the human reviewer."},
+    {"key": "confidence", "label": "Confidence", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "absolutely certain", "4": "confident but not absolutely certain", "3": "fairly confident", "2": "willing to defend, but quite likely missed central parts", "1": "educated guess"}},
+     "guidance": "Left for the human reviewer."},
+    {"key": "ethical_concerns", "label": "Ethical concerns", "type": "text", "fill": null, "source": "official",
+     "guidance": "Describe any ethical concerns."},
+    {"key": "code_of_conduct", "label": "Code of conduct acknowledgement", "type": "ack", "fill": null, "source": "official", "guidance": ""},
+    {"key": "responsible_reviewing", "label": "Responsible reviewing acknowledgement", "type": "ack", "fill": null, "source": "official", "guidance": ""}
+  ],
+  "checklist": []
+}

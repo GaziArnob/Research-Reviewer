@@ -1,0 +1,35 @@
+{% extends "base_public.html" %}
+{% block title %}Trust &amp; privacy{% endblock %}
+{% block content %}
+<div class="wrap"><div class="prose">
+  <h1>Trust &amp; privacy</h1>
+  <p class="muted">How {{ brand }} treats your papers, and what it cannot do. We would rather state a limit than hide it.</p>
+
+  <h2>What happens to a paper</h2>
+  <ul>
+    <li>The PDF is processed and then <strong>deleted</strong>. Only the extracted results are kept, against your account, until you delete them.</li>
+    <li>Other users cannot open your papers. Every paper page checks ownership on the server.</li>
+    <li>You can delete one paper, or your whole account, at any time under Settings. Account data can be exported as JSON.</li>
+    <li>The audit trail records who did what and when. It never stores manuscript text.</li>
+  </ul>
+
+  <h2>Language model and third parties</h2>
+  <ul>
+    <li>The optional language-model pass runs on a model you host (Ollama). Nothing is sent to an AI provider.</li>
+    <li>The <strong>online checks</strong> contact Crossref, Semantic Scholar, arXiv and OpenAlex with the paper title, one abstract sentence and reference titles or DOIs. Turn them off for venues that discourage third-party services. The venue form tells you when that applies.</li>
+  </ul>
+
+  <h2>Venue rules on AI</h2>
+  <p>Each venue template records what the venue's own reviewer page says about AI tools and when we last checked. ICML, ACL Rolling Review, CVPR and IEEE forbid AI-written review text, so their forms hide language-model content. ICLR allows LLMs as a general assist tool with the reviewer fully responsible. NeurIPS and AAAI pages checked were silent. Rules change: check the venue's current page.</p>
+
+  <h2>What the tool cannot do</h2>
+  <ul>
+    <li><strong>It does not rate papers.</strong> In our benchmark on 20 ICLR 2017 papers the local model's scores had no useful relationship with human ratings (rank correlation −0.19). Scores, ratings and recommendations are therefore never prefilled.</li>
+    <li>Many findings are keyword hints and say so. A missing keyword is not proof that something is missing.</li>
+    <li>A small local model writes generic comments and can miss real weaknesses. The quote check removes unsupported comments but cannot add good ones.</li>
+    <li>Reference matching uses Crossref, which lacks many preprints and books, so some references are reported as "not matched" although they exist.</li>
+    <li>It is not a plagiarism or AI-text detector.</li>
+  </ul>
+  <p class="muted small">This page describes how the software behaves. It is not legal advice.</p>
+</div></div>
+{% endblock %}

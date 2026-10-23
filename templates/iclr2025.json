@@ -1,0 +1,38 @@
+{
+  "id": "iclr2025",
+  "name": "ICLR 2025 review (partly verified)",
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": ["https://iclr.cc/Conferences/2025/ReviewerGuide"],
+    "notes": "The official Reviewer Guide page gives the review structure, the accept/reject recommendation and the two-question Code of Ethics report. It does NOT list the OpenReview form fields or numeric scales. Soundness, Presentation, Contribution, Rating and Confidence are marked 'unverified': they come from secondary sources that disagree on the rating values, so no scale values are filled in. The ICLR 2027 reviewer page was checked too and is equally silent on form fields and scales. Check the live OpenReview form before using them."
+  },
+  "policy": {
+    "llm_review_text": "allowed_assist",
+    "third_party_services": "not_stated",
+    "notes": ["The ICLR 2025 reviewer guide allows LLMs as a general-purpose assist tool, but the reviewer takes full responsibility for everything written under their name (fabricated facts, plagiarism). Treat the AI-prepared content as notes to verify, not as the review."]
+  },
+  "sections": [
+    {"key": "summary", "label": "Summary of claimed contributions", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "Summarize the claimed contributions, neutrally."},
+    {"key": "strengths", "label": "Strengths", "type": "text", "fill": "strengths", "source": "official", "guidance": "Strong points."},
+    {"key": "weaknesses", "label": "Weaknesses", "type": "text", "fill": "weaknesses", "source": "official", "guidance": "Weak points."},
+    {"key": "recommendation", "label": "Recommendation (accept or reject) with key reasons", "type": "choice", "choices": ["Accept", "Reject"], "fill": null, "source": "official",
+     "guidance": "State your initial recommendation and one or two key reasons. Left for the human reviewer."},
+    {"key": "questions", "label": "Questions for the authors", "type": "text", "fill": "questions", "source": "official", "guidance": ""},
+    {"key": "additional_feedback", "label": "Additional feedback to improve the paper", "type": "text", "fill": "other_aspects", "source": "official", "guidance": ""},
+    {"key": "coe_violation", "label": "Code of Ethics: potential violation?", "type": "choice", "choices": ["Yes", "No"], "fill": null, "source": "official",
+     "guidance": "If yes, explain why."},
+    {"key": "soundness", "label": "Soundness", "type": "scale", "fill": "quality", "source": "unverified", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}},
+     "guidance": "UNVERIFIED field and scale (secondary source). Left for the human reviewer."},
+    {"key": "presentation", "label": "Presentation", "type": "scale", "fill": "clarity", "source": "unverified", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}},
+     "guidance": "UNVERIFIED field and scale (secondary source)."},
+    {"key": "contribution", "label": "Contribution", "type": "scale", "fill": "prior_work", "source": "unverified", "scale": {"min": 1, "max": 4, "step": 1, "labels": {}},
+     "guidance": "UNVERIFIED field and scale (secondary source)."},
+    {"key": "rating", "label": "Rating", "type": "scale", "fill": null, "source": "unverified", "scale": {"min": 1, "max": 10, "step": 1, "labels": {}},
+     "guidance": "UNVERIFIED: sources disagree on the allowed values. Fill in from the live form."},
+    {"key": "confidence", "label": "Confidence", "type": "scale", "fill": null, "source": "unverified", "scale": {"min": 1, "max": 5, "step": 1, "labels": {}},
+     "guidance": "UNVERIFIED scale. Left for the human reviewer."}
+  ],
+  "checklist": []
+}

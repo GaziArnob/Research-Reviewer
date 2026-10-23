@@ -1,0 +1,52 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, alert %}
+{% block tab %}
+{% if form %}
+<div class="card">
+  <form method="get" action="/app/papers/{{ sub.id }}/form" class="row">
+    <div class="field mb0"><label for="venue">Venue template</label>
+      <select id="venue" name="venue">{% for v in venues %}<option value="{{ v.id }}" {{ 'selected' if v.id == venue }}>{{ v.name }}</option>{% endfor %}</select></div>
+    <button class="btn" type="submit">Show</button><span class="spacer"></span>
+    <a class="btn" href="/app/papers/{{ sub.id }}/form/export?venue={{ venue }}&fmt=md">{{ icon('download') }}Markdown</a>
+    <a class="btn btn-primary" href="/app/papers/{{ sub.id }}/form/export?venue={{ venue }}&fmt=docx">{{ icon('download') }}Word (.docx)</a>
+  </form>
+</div>
+
+{% if form.provenance_level == 'verified' %}{{ alert('ok', 'Fields and scales verified against the official reviewer page on ' ~ tpl.provenance.checked ~ '.') }}
+{% else %}{{ alert('warn', 'Only partly verified against official pages. Fields marked unverified must be checked against the live form.') }}{% endif %}
+<p class="muted small">{{ form.provenance_notes }}
+  {% for u in form.official_urls %}<br><a href="{{ u }}" rel="noopener noreferrer" target="_blank">{{ u }}</a>{% endfor %}</p>
+
+{% if form.llm_policy == 'forbidden' %}{{ alert('bad', 'This venue forbids AI-written review text. Language-model content is hidden below. ' ~ (form.policy_notes[0] if form.policy_notes else '')) }}
+{% elif form.policy_notes %}{{ alert('info', form.policy_notes | join(' ')) }}{% endif %}
+{% if form.third_party == 'discouraged' %}
+  {{ alert('warn', 'This venue discourages sending confidential content to third-party services.' ~ (' This paper was processed with online checks on: start a new review with them off.' if used_online else ' Online checks were off for this paper.')) }}
+{% endif %}
+
+{% if form.criteria %}<details class="card"><summary>Official evaluation criteria</summary><ul>{% for c in form.criteria %}<li>{{ c }}</li>{% endfor %}</ul></details>{% endif %}
+
+{% for f in form.fields %}
+<div class="card">
+  <div class="card-head"><h2>{{ f.label }}</h2>
+    <div class="row">{% if f.source != 'official' %}<span class="badge b-warn">{{ f.source }}: check the live form</span>{% endif %}
+      {% if f.human_fill %}<span class="badge b-mute">You fill this in</span>{% endif %}</div></div>
+  {% if f.guidance %}<p class="muted small">{{ f.guidance }}</p>{% endif %}
+  {% if f.type == 'scale' %}
+    {% if f.scale %}<p class="small">Scale {{ f.scale.min }} to {{ f.scale.max }}{% if f.scale.step != 1 %}, steps of {{ f.scale.step }}{% endif %}</p>
+      {% if f.scale.labels %}<div class="scale">{% for k, v in f.scale.labels.items() | sort(reverse=true) %}<strong>{{ k }}</strong><span>{{ v }}</span>{% endfor %}</div>{% endif %}
+    {% else %}<p class="small muted">Scale: see the live form.</p>{% endif %}
+  {% elif f.type == 'choice' %}<p class="small">Options: {{ f.choices | join(' / ') }}</p>{% endif %}
+  {% if f.prepared %}<div class="quote">{% for line in f.prepared %}{{ line }}<br>{% endfor %}</div>{% endif %}
+</div>
+{% endfor %}
+
+{% if form.checklist %}
+<div class="card"><h2>Checklist</h2><p class="muted small">Answers marked auto are keyword hints. Verify each against the paper.</p>
+  <div class="table-wrap"><table class="t"><thead><tr><th>Item</th><th>Answer</th><th>Note</th></tr></thead><tbody>
+  {% for r in form.checklist %}<tr><td>{% if r.group %}<span class="muted small">{{ r.group }}</span><br>{% endif %}{{ r.text }}</td>
+    <td class="nowrap">{% if r.answer %}<span class="badge {{ 'b-ok' if r.answer == 'yes' else 'b-bad' if r.answer == 'no' else 'b-mute' }}">{{ r.answer }}</span>{% if r.auto %} <span class="muted small">auto</span>{% endif %}{% else %}<span class="muted">you</span>{% endif %}</td>
+    <td class="small muted">{{ r.note }}{% if r.quote %}<div class="quote">“{{ r.quote }}”</div>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+</div>
+{% endif %}
+{% else %}<div class="empty">{{ icon('clock') }}<h3>Available once the review is ready</h3></div>{% endif %}
+{% endblock %}

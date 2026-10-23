@@ -1,0 +1,48 @@
+{
+  "id": "ieee_journals",
+  "name": "IEEE journals (general review criteria)",
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": ["https://journals.ieeeauthorcenter.ieee.org/submit-your-article-for-peer-review/become-an-ieee-reviewer/", "https://ieeeaccess.ieee.org/reviewers/reviewer-best-practices/"],
+    "notes": "IEEE has no single review form: each journal or society sets its own questionnaire in its submission system (ScholarOne/Manuscript Central). The criteria and the recommendation categories below are from the IEEE Author Center reviewer page (recommendations: Accept, Revise (Major or Minor), Reject; names vary by publication) and the IEEE Access best-practice page (technical, presentation and reference checks). Neither page gives numeric scales or the form layout. IEEE conferences use their own forms, which are not covered."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "discouraged",
+    "notes": ["IEEE Author Center: do not use AI tools (for example ChatGPT, Gemini) to generate or draft reviews. LLM-written content is therefore hidden in this export; only rule-based checks and quote-verified evidence are shown.",
+              "IEEE Access: do not share manuscript content with public AI platforms (treated as a confidentiality breach) and do not run submissions through plagiarism or AI-detection software. Turn the online checks off: they send the title, one abstract sentence and reference titles to Crossref, Semantic Scholar, arXiv and OpenAlex.",
+              "Reviewers should check whether they can honour the confidentiality terms before accepting, and decline if a conflict of interest exists."]
+  },
+  "criteria": [
+    "Contribution to the field and novelty.",
+    "Completeness of the literature review and appropriateness of the references.",
+    "Soundness of the methods and experimental design.",
+    "Quality and reproducibility of the results; benchmarking and validation sufficient.",
+    "Logical flow and strength of the conclusions; the conclusions follow from the data and analysis.",
+    "Organization, style and compliance with the publication requirements.",
+    "For revised articles: whether earlier comments were addressed, and the authors' response to reviewers.",
+    "Surveys, reviews and tutorials: coverage, new insights and long-term value."
+  ],
+  "sections": [
+    {"key": "summary", "label": "Summary of the work, merits and drawbacks", "type": "text", "fill": "summary", "source": "official",
+     "guidance": "Summarize the work and note its overall merits and drawbacks, with constructive, substantial feedback."},
+    {"key": "contribution", "label": "Contribution and novelty", "type": "text", "fill": "prior_work", "source": "official",
+     "guidance": "Contribution to the field and novelty. Claims that work was done before need specific references."},
+    {"key": "literature", "label": "Literature review and references", "type": "text", "fill": "prior_work", "source": "official",
+     "guidance": "Is the background and motivation sufficient? Are references current and relevant? You may point out overlooked areas, but do not require specific articles (including your own) unless relevant, and explain why a suggested reference matters."},
+    {"key": "methods", "label": "Soundness of methods and experimental design", "type": "text", "fill": "quality", "source": "official",
+     "guidance": "Depth of the theoretical or experimental work, strength of the analysis, major technical flaws."},
+    {"key": "results", "label": "Quality and reproducibility of results", "type": "text", "fill": "reproducibility", "source": "official",
+     "guidance": "Quality of data and results, benchmarking and validation. If not reproducible, say what extra information is needed."},
+    {"key": "conclusions", "label": "Conclusions and logical flow", "type": "text", "fill": "claims_evidence", "source": "official",
+     "guidance": "Do the conclusions follow from the data and analysis? Does the information flow logically?"},
+    {"key": "presentation", "label": "Presentation", "type": "text", "fill": "clarity", "source": "official",
+     "guidance": "Structure, language and writing style, quality of figures and tables, typos, formatting and compliance."},
+    {"key": "revision", "label": "Revised article: were earlier comments addressed?", "type": "text", "fill": null, "source": "official",
+     "guidance": "Only for revised submissions: check the authors' response to reviewers."},
+    {"key": "recommendation", "label": "Recommendation", "type": "choice", "choices": ["Accept", "Revise (Major)", "Revise (Minor)", "Reject"], "fill": null, "source": "official",
+     "guidance": "Decision names vary by publication: use your journal's options. Recommendations must be supported by specific, critical comments. Left for the human reviewer."}
+  ],
+  "checklist": []
+}

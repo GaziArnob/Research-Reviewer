@@ -1,0 +1,45 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, status_badge %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Hello, {{ user.name.split(' ')[0] }}</h1><p class="muted">Your reviewing workspace.</p></div>
+  <a class="btn btn-primary" href="/app/new">{{ icon('upload') }}New review</a>
+</div>
+
+<div class="grid grid-4">
+  <div class="stat"><div class="n">{{ used }}</div><div class="l">Papers this month</div></div>
+  <div class="stat"><div class="n">{{ counts.get('done', 0) }}</div><div class="l">Ready to read</div></div>
+  <div class="stat"><div class="n">{{ counts.get('queued', 0) + counts.get('running', 0) }}</div><div class="l">In progress</div></div>
+  <div class="stat"><div class="n">{% if quota is none %}∞{% else %}{{ quota }}{% endif %}</div><div class="l">Papers left this month ({{ plan_of(user.plan).name }})</div></div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>Recent papers</h2>{% if total %}<a href="/app/papers">View all</a>{% endif %}</div>
+  {% if rows %}
+  <div class="table-wrap"><table class="t">
+    <thead><tr><th>Paper</th><th>Status</th><th>Issues</th><th>Added</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr data-status-id="{{ r.id }}" data-status="{{ r.status }}">
+        <td><a href="/app/papers/{{ r.id }}"><strong>{{ r.title or r.filename }}</strong></a><div class="muted small">{{ r.filename }}</div></td>
+        <td>{{ status_badge(r.status) }}{% if r.status in ('queued', 'running') %} <span class="muted small"><span class="spinner"></span> <span data-progress>{{ r.progress or 'Waiting' }}</span></span>{% endif %}</td>
+        <td>{% if r.status == 'done' %}<span class="badge b-bad">{{ findings[r.id].major }} major</span> <span class="badge b-warn">{{ findings[r.id].minor }} minor</span>{% else %}<span class="muted">-</span>{% endif %}</td>
+        <td class="nowrap muted">{{ r.created_at | ago }}</td>
+      </tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}
+  <div class="empty">{{ icon('file') }}<h3>No papers yet</h3><p>Upload a PDF or enter an arXiv id to see your first evidence-linked review.</p>
+    <a class="btn btn-primary" href="/app/new">Review your first paper</a></div>
+  {% endif %}
+</div>
+
+<div class="grid grid-2">
+  <div class="card"><h3>{{ icon('shield') }} Before you start</h3>
+    <p class="muted">Check the AI rules of the venue you review for. Venue forms hide language-model text where the venue forbids it, but only you know which venue applies.</p>
+    <a href="/trust">How papers are handled</a></div>
+  <div class="card"><h3>{{ icon('book') }} A reminder</h3>
+    <p class="muted">The tool never fills in ratings or recommendations. Read the evidence, then write the review yourself.</p></div>
+</div>
+{% endblock %}

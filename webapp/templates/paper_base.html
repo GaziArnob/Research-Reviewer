@@ -1,0 +1,30 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, alert, status_badge, csrf_input with context %}
+{% block title %}{{ sub.title or sub.filename }}{% endblock %}
+{% block content %}
+<div class="breadcrumb"><a href="/app/papers">Papers</a> / {{ sub.filename }}</div>
+<div class="page-head" data-status-id="{{ sub.id }}" data-status="{{ sub.status }}">
+  <div><h1>{{ sub.title or sub.filename }}</h1>
+    <div class="row">{{ status_badge(sub.status) }}<span class="muted small">Added {{ sub.created_at | dt }}</span>
+      {% if res and res.llm_model %}<span class="badge b-mute">LLM: {{ res.llm_model }}</span>{% endif %}
+      {% if sub.options and sub.options.online %}<span class="badge b-mute">Online checks on</span>{% endif %}</div></div>
+  <form method="post" action="/app/papers/{{ sub.id }}/delete" data-confirm="Delete this paper and all its results? This cannot be undone.">
+    {{ csrf_input() }}<button class="btn btn-danger btn-sm" type="submit">{{ icon('trash') }}Delete</button></form>
+</div>
+
+{% if sub.status in ('queued', 'running') %}
+  <div class="card" data-status-id="{{ sub.id }}" data-status="{{ sub.status }}"><div class="row"><span class="spinner"></span>
+    <div><strong data-progress>{{ sub.progress or 'Waiting in the queue' }}</strong>
+    <div class="muted small">This page updates by itself. You can leave and come back; the review keeps running.</div></div></div></div>
+{% elif sub.status == 'failed' %}
+  {{ alert('bad', 'The review failed: ' ~ (sub.error or 'unknown error') ~ '. Upload the paper again; if it keeps failing, contact support.') }}
+{% elif sub.status == 'rejected' %}
+  {% set why = (res.findings | selectattr('module', 'equalto', 'validation') | list) if res else [] %}
+  {{ alert('warn', 'This paper could not be reviewed. ' ~ (why[0].text if why else '')) }}
+{% endif %}
+
+<nav class="tabs" aria-label="Paper sections">
+  {% for key, label in tabs %}<a href="/app/papers/{{ sub.id }}{{ '' if key == 'overview' else '/' ~ key }}" class="{{ 'active' if tab == key }}" {{ 'aria-current=page' if tab == key }}>{{ label }}</a>{% endfor %}
+</nav>
+{% block tab %}{% endblock %}
+{% endblock %}

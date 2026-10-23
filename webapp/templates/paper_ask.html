@@ -1,0 +1,20 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, alert %}
+{% block tab %}
+{% if ready and llm_ok %}
+<div class="card">
+  <form id="ask-form" method="post" action="/app/papers/{{ sub.id }}/ask">
+    <div class="field"><label for="q">Your question</label>
+      <textarea id="q" maxlength="500" placeholder="Which datasets are used? What is the main result? Is the code released?" required></textarea>
+      <div class="hint">Answers come from passages of this paper only. Check the cited passages before relying on an answer. Do not paste answers into a review where the venue forbids AI-written text.</div></div>
+    <button class="btn btn-primary" type="submit">{{ icon('chat') }}Ask</button>
+  </form>
+</div>
+<div id="ask-result"></div>
+{% for item in history %}{% include "_qa_item.html" %}{% endfor %}
+{% elif not llm_ok %}
+  <div class="empty">{{ icon('chat') }}<h3>No language model configured</h3><p>An administrator needs to set LLM_PROVIDER=ollama on the server.</p></div>
+{% else %}
+  <div class="empty">{{ icon('clock') }}<h3>Available once the review is ready</h3></div>
+{% endif %}
+{% endblock %}

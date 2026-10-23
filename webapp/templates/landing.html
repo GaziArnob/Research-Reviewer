@@ -1,0 +1,49 @@
+{% extends "base_public.html" %}
+{% block title %}{{ tagline }}{% endblock %}
+{% block content %}
+<section class="hero"><div class="wrap">
+  <span class="badge b-brand">Early access</span>
+  <h1>Review faster. Trace every comment to the paper.</h1>
+  <p class="lead">{{ brand }} reads a manuscript, runs transparent checks, drafts evidence-linked notes with verified quotes, and prepares the review form for your venue. You make the judgement and write the review.</p>
+  <div class="row">
+    {% if user %}<a class="btn btn-primary btn-lg" href="/app/new">Review a paper</a>
+    {% elif allow_signup %}<a class="btn btn-primary btn-lg" href="/signup">Create a free account</a><a class="btn btn-lg" href="/login">Sign in</a>
+    {% else %}<a class="btn btn-primary btn-lg" href="/login">Sign in</a>{% endif %}
+  </div>
+  <p class="muted small">Runs on your own machine or server. No scores are shown by default.</p>
+</div></section>
+
+<section class="section" id="features"><div class="wrap">
+  <h2>What you get for each paper</h2>
+  <p class="sub">Every finding says where it came from and how sure the tool is, so you can check it in seconds instead of rereading the whole paper.</p>
+  <div class="grid grid-3">
+    <div class="feature"><div class="ic">{% from "_macros.html" import icon %}{{ icon('check') }}</div><h3>Evidence-linked comments</h3><p class="muted">Strengths, weaknesses and questions come with a quote and page. A comment whose quote is not in the paper is removed automatically.</p></div>
+    <div class="feature"><div class="ic">{{ icon('search') }}</div><h3>Reference and citation checks</h3><p class="muted">DOIs and titles are checked against Crossref, in-text citations are matched to the list, and retractions are flagged where the data exists.</p></div>
+    <div class="feature"><div class="ic">{{ icon('book') }}</div><h3>Related-work comparison</h3><p class="muted">Finds similar papers and highlights possible overlap or missing citations, each backed by a quote from the other paper's abstract.</p></div>
+    <div class="feature"><div class="ic">{{ icon('clipboard') }}</div><h3>Reproducibility and statistics hints</h3><p class="muted">Keyword checks for code, data, seeds, compute, variance and significance tests, plus the AAAI reproducibility checklist.</p></div>
+    <div class="feature"><div class="ic">{{ icon('file') }}</div><h3>Venue-ready forms</h3><p class="muted">NeurIPS, ICML, ACL Rolling Review, ICLR, CVPR, AAAI and IEEE layouts, exported to Markdown or Word. Ratings are always left for you.</p></div>
+    <div class="feature"><div class="ic">{{ icon('chat') }}</div><h3>Ask the paper</h3><p class="muted">Ask a question and get an answer with the passages it came from, and warnings when a number is not in the cited text.</p></div>
+  </div>
+</div></section>
+
+<section class="section alt" id="how"><div class="wrap">
+  <h2>How it works</h2><p class="sub">Three steps. Most of the time goes into the optional language-model pass.</p>
+  <div class="grid grid-3">
+    <div class="step"><div class="num">1</div><div><h3>Upload</h3><p class="muted">Add PDFs or arXiv ids. Scanned PDFs are read with OCR.</p></div></div>
+    <div class="step"><div class="num">2</div><div><h3>Review the evidence</h3><p class="muted">Open the findings, the claims and the related work. Filter by severity or by how certain each item is.</p></div></div>
+    <div class="step"><div class="num">3</div><div><h3>Write and export</h3><p class="muted">Pick the venue, copy the prepared evidence into your own words, and export the form.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2>Built for responsible reviewing</h2>
+  <p class="sub">Reviewing is a confidential duty and venues have rules about AI. The product is designed around that.</p>
+  <div class="grid grid-2">
+    <div class="card"><h3>{{ icon('shield') }} Venue AI rules are enforced</h3><p class="muted">ICML, ACL Rolling Review, CVPR and IEEE forbid AI-written review text. For those venues the form hides everything a language model wrote and keeps only rule-based checks and verified quotes.</p></div>
+    <div class="card"><h3>{{ icon('lock') }} Private by default</h3><p class="muted">The PDF is deleted after processing. The language model runs locally. Online checks send only the title, one abstract sentence and reference titles, and can be turned off.</p></div>
+    <div class="card"><h3>{{ icon('alert') }} No scores unless you ask</h3><p class="muted">On a 20-paper benchmark, the local model's scores did not track human reviewers, so ratings and recommendations are never filled in for you.</p></div>
+    <div class="card"><h3>{{ icon('user') }} A human approves</h3><p class="muted">Nothing is final until a named reviewer signs off, and every action is written to an audit trail.</p></div>
+  </div>
+  <p class="muted small">Read the limits we state openly on the <a href="/trust">Trust &amp; privacy</a> page.</p>
+</div></section>
+{% endblock %}

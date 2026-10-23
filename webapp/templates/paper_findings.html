@@ -1,0 +1,19 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, finding %}
+{% block tab %}
+{% if res %}
+  {% if items %}
+  <div class="card">
+    <div class="chips" role="group" aria-label="Filter by type">
+      {% for k in kinds %}<button class="chip" type="button" data-group="kind" data-filter="{{ k }}" aria-pressed="false">{{ k | capitalize }} ({{ items | selectattr('kind', 'equalto', k) | list | length }})</button>{% endfor %}
+    </div>
+    <div class="chips" role="group" aria-label="Filter by certainty">
+      {% set labels = {'verified': 'Quote verified', 'needs_verification': 'Needs verifying', 'uncertain': 'Uncertain'} %}
+      {% for st in states %}<button class="chip" type="button" data-group="state" data-filter="{{ st }}" aria-pressed="false">{{ labels[st] }}</button>{% endfor %}
+    </div>
+    <p class="muted small mb0">Showing <strong id="shown-count">{{ items | length }}</strong> of {{ items | length }}. “Quote verified” means the quote exists in the paper; the judgement is still the tool’s.</p>
+  </div>
+  {% for f in items %}{{ finding(f) }}{% endfor %}
+  {% else %}<div class="empty">{{ icon('check') }}<h3>No findings</h3></div>{% endif %}
+{% else %}<div class="empty">{{ icon('clock') }}<h3>Not ready yet</h3></div>{% endif %}
+{% endblock %}

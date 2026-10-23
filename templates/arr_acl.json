@@ -1,0 +1,55 @@
+{
+  "id": "arr_acl",
+  "name": "ACL Rolling Review (ARR) review",
+  "provenance": {
+    "level": "verified",
+    "checked": "2026-10-24",
+    "official_urls": ["https://aclrollingreview.org/reviewform", "https://aclrollingreview.org/reviewerguidelines"],
+    "notes": "Scales and labels come from the official ARR review form page; the reviewer checklist from the reviewer guidelines. The four text field names (Paper Summary, Summary of Strengths, Summary of Weaknesses, Comments/Suggestions/Typos) come from an older ARR cycle described in a research paper and were not on the pages above: check them against the live form."
+  },
+  "policy": {
+    "llm_review_text": "forbidden",
+    "third_party_services": "discouraged",
+    "notes": ["The ARR reviewer guidelines say the reviewer must write the content and argument of the review personally and that using generative assistance to create the first draft is not permitted (light paraphrasing help is allowed). LLM-written content is therefore hidden in this export.",
+              "The guidelines also say not to upload a manuscript to non-privacy-preserving generative tools and not to submit confidential information to third-party services. The online checks send the title, one abstract sentence and reference titles to Crossref, Semantic Scholar, arXiv and OpenAlex: turn them off for ARR papers."]
+  },
+  "sections": [
+    {"key": "paper_summary", "label": "Paper Summary", "type": "text", "fill": "summary", "source": "secondary",
+     "guidance": "Describe what the paper is about, to help action editors understand the topic and spot misunderstandings."},
+    {"key": "strengths", "label": "Summary of Strengths", "type": "text", "fill": "strengths", "source": "secondary",
+     "guidance": "Major reasons to publish at a selective *ACL venue, for example novel and useful methodology, insightful results or analysis, clear related literature."},
+    {"key": "weaknesses", "label": "Summary of Weaknesses", "type": "text", "fill": "weaknesses", "source": "secondary",
+     "guidance": "Major reasons not to publish."},
+    {"key": "comments", "label": "Comments, Suggestions and Typos", "type": "text", "fill": "other_aspects", "source": "secondary",
+     "guidance": "Questions, suggestions, typos."},
+    {"key": "soundness", "label": "Soundness", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 0.5, "labels": {"5": "Excellent: one of the most thorough studies of its type", "4": "Strong: sufficient support for all claims", "3": "Acceptable: sufficient support for main claims; minor points may need more", "2": "Poor: some main claims insufficiently supported; major problems", "1": "Major Issues: not thorough enough, or not relevant to ACL"}},
+     "guidance": "Must be justified by the review text. Left for the human reviewer."},
+    {"key": "excitement", "label": "Excitement", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 0.5, "labels": {"5": "Highly Exciting", "4": "Exciting", "3": "Interesting", "2": "Potentially Interesting", "1": "Not Exciting"}},
+     "guidance": "Personal taste, separate from soundness. Left for the human reviewer."},
+    {"key": "overall_assessment", "label": "Overall Assessment", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 0.5, "labels": {"5": "Consider for Award", "4.5": "Borderline Award", "4": "Conference", "3.5": "Borderline Conference", "3": "Findings", "2.5": "Borderline Findings", "2": "Resubmit next cycle", "1.5": "Resubmit after next cycle", "1": "Do not resubmit"}},
+     "guidance": "Left for the human reviewer."},
+    {"key": "reproducibility", "label": "Reproducibility", "type": "scale", "fill": "reproducibility", "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "Could easily reproduce the results", "4": "Could mostly reproduce", "3": "Could reproduce with some difficulty", "2": "Would be hard pressed to reproduce", "1": "Could not reproduce"}},
+     "guidance": "Justify low scores. The tool lists keyword-based reproducibility gaps below as hints."},
+    {"key": "confidence", "label": "Reviewer Confidence", "type": "scale", "fill": null, "source": "official",
+     "scale": {"min": 1, "max": 5, "step": 1, "labels": {"5": "Positive, read carefully, familiar with related work", "4": "Quite sure", "3": "Pretty sure, did not check details such as math or experimental design", "2": "Willing to defend, may have missed details", "1": "Not my area / educated guess"}},
+     "guidance": "Left for the human reviewer."},
+    {"key": "limitations_societal_impact", "label": "Limitations and Societal Impact", "type": "text", "fill": "limitations", "source": "official",
+     "guidance": "Do the authors adequately discuss limitations and positive and negative societal impact? Suggest improvements if not."},
+    {"key": "ethical_concerns", "label": "Ethical Concerns", "type": "text", "fill": null, "source": "official",
+     "guidance": "Check the ACL Code of Ethics and the authors' ARR checklist; describe issues and how the authors addressed them."},
+    {"key": "needs_ethics_review", "label": "Needs Ethics Review", "type": "choice", "choices": ["Yes", "No"], "fill": null, "source": "official",
+     "guidance": "Should the paper go to a separate in-depth ethics review? Explain if yes."}
+  ],
+  "checklist": [
+    {"id": "appropriateness", "text": "The paper is appropriate for the venue (topic, type).", "options": ["yes", "no"], "auto": null},
+    {"id": "hallucinated_refs", "text": "No hallucinated or non-existent references.", "options": ["yes", "no"], "auto": "references_exist"},
+    {"id": "anonymity", "text": "No anonymity violations.", "options": ["yes", "no"], "auto": null},
+    {"id": "format", "text": "No style or length violations.", "options": ["yes", "no"], "auto": null},
+    {"id": "limitations_section", "text": "A Limitations section is present.", "options": ["yes", "no"], "auto": "limitations"},
+    {"id": "responsible_nlp", "text": "No problems with the Responsible NLP checklist.", "options": ["yes", "no"], "auto": null}
+  ]
+}

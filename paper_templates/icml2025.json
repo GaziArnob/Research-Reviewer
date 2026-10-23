@@ -1,0 +1,65 @@
+{
+  "id": "icml2025",
+  "name": "ICML 2025 submission",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://icml.cc/Conferences/2025/AuthorInstructions"
+    ],
+    "notes": "Verified on the official author instructions: LaTeX only, style file icml2025 (icml2025.zip), main body up to 8 pages with unlimited references and appendices, anonymized submission, `\\usepackage[accepted]{icml2025}` is for camera-ready only. The submission-mode options are NOT stated on the page (the default without options is the anonymous mode in the ICML example paper, unverified). The ICML front-matter commands used below come from that example and may need adjustment."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [],
+    "preamble": [
+      "\\usepackage{icml2025}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}"
+    ],
+    "author_style": "icml",
+    "keywords_style": "icml",
+    "class_file": "icml2025.sty (download from ICML; not in TeX Live)",
+    "download": "https://media.icml.cc/Conferences/ICML2025/Styles/icml2025.zip"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Times",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": 8,
+    "text": "Main body up to 8 pages; references and appendices unlimited. Exceeding the main-body limit leads to automatic rejection."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "No acknowledgements, grant numbers or public code links; third-person self-citation."
+  },
+  "facts": [
+    {
+      "text": "Style file icml2025 (icml2025.zip).",
+      "status": "official"
+    },
+    {
+      "text": "Main body up to eight pages; references and appendices unlimited.",
+      "status": "official"
+    },
+    {
+      "text": "Submissions must be anonymized.",
+      "status": "official"
+    },
+    {
+      "text": "`[accepted]` option is for camera-ready only.",
+      "status": "official"
+    },
+    {
+      "text": "Submission mode = package without options; two-column Times 10 pt.",
+      "status": "unverified"
+    }
+  ]
+}

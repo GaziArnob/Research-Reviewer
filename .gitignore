@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+data/uploads/
+data/cache/
+data/pgdata/
+data/pg.log
+data/benchmark/
+data/calibration.json.bak
+tools/
+.claude/
+*.log
+data/*.db
+data/calibration.json

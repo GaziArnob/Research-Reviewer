@@ -1,0 +1,40 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, status_badge %}
+{% block title %}Papers{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Papers</h1><p class="muted">{{ total }} paper{{ '' if total == 1 else 's' }}</p></div>
+  <a class="btn btn-primary" href="/app/new">{{ icon('upload') }}New review</a>
+</div>
+<div class="card">
+  <form method="get" action="/app/papers" class="row">
+    <div><label class="sr-only" for="q">Search</label><input id="q" name="q" type="search" placeholder="Search title or file name" value="{{ q }}"></div>
+    <div><label class="sr-only" for="status">Status</label>
+      <select id="status" name="status"><option value="">All statuses</option>
+        {% for k, v in [('done', 'Ready'), ('running', 'Reviewing'), ('queued', 'Queued'), ('rejected', 'Not reviewable'), ('failed', 'Failed')] %}
+        <option value="{{ k }}" {{ 'selected' if status == k }}>{{ v }}</option>{% endfor %}</select></div>
+    <button class="btn" type="submit">{{ icon('search') }}Filter</button>
+  </form>
+</div>
+<div class="card">
+  {% if rows %}
+  <div class="table-wrap"><table class="t">
+    <thead><tr><th>Paper</th><th>Status</th><th>Issues</th><th>Added</th><th></th></tr></thead><tbody>
+    {% for r in rows %}
+      <tr data-status-id="{{ r.id }}" data-status="{{ r.status }}">
+        <td><a href="/app/papers/{{ r.id }}"><strong>{{ r.title or r.filename }}</strong></a><div class="muted small">{{ r.filename }}</div></td>
+        <td>{{ status_badge(r.status) }}{% if r.status in ('queued', 'running') %}<div class="muted small"><span class="spinner"></span> <span data-progress>{{ r.progress or 'Waiting' }}</span></div>{% endif %}
+            {% if r.status == 'failed' %}<div class="muted small">{{ r.error }}</div>{% endif %}</td>
+        <td>{% if r.status == 'done' %}<span class="badge b-bad">{{ counts[r.id].major }} major</span> <span class="badge b-warn">{{ counts[r.id].minor }} minor</span>{% else %}<span class="muted">-</span>{% endif %}</td>
+        <td class="nowrap muted">{{ r.created_at | dt }}</td>
+        <td class="nowrap"><a class="btn btn-sm" href="/app/papers/{{ r.id }}">Open</a></td>
+      </tr>
+    {% endfor %}</tbody></table></div>
+  {% if pages > 1 %}<div class="row between"><span class="muted small">Page {{ page }} of {{ pages }}</span>
+    <div class="row">{% if page > 1 %}<a class="btn btn-sm" href="/app/papers?page={{ page - 1 }}&status={{ status }}&q={{ q | urlencode }}">Previous</a>{% endif %}
+    {% if page < pages %}<a class="btn btn-sm" href="/app/papers?page={{ page + 1 }}&status={{ status }}&q={{ q | urlencode }}">Next</a>{% endif %}</div></div>{% endif %}
+  {% else %}
+  <div class="empty">{{ icon('file') }}<h3>No papers found</h3><p>{% if q or status %}Try clearing the filters.{% else %}Add a paper to get started.{% endif %}</p></div>
+  {% endif %}
+</div>
+{% endblock %}

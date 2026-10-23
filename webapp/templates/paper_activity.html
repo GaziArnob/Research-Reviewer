@@ -1,0 +1,14 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon %}
+{% block tab %}
+<div class="card"><h2>Timeline</h2>
+  <dl class="kv"><dt>Added</dt><dd>{{ sub.created_at | dt }}</dd><dt>Started</dt><dd>{{ sub.started_at | dt or '-' }}</dd><dt>Finished</dt><dd>{{ sub.finished_at | dt or '-' }}</dd>
+    <dt>Source</dt><dd>{{ 'arXiv ' ~ sub.source_ref if sub.source == 'arxiv' else 'PDF upload (deleted after processing)' }}</dd></dl>
+</div>
+<div class="card"><h2>Audit trail</h2>
+  {% if events %}<div class="table-wrap"><table class="t"><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>
+    {% for e in events %}<tr><td class="nowrap">{{ e.created_at | dt }}</td><td>{{ e.action | replace('_', ' ') }}</td><td class="muted small">{{ e.detail or '' }}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="muted">No events yet.</p>{% endif %}
+  <p class="muted small mb0">The trail records actions only, never manuscript text.</p>
+</div>
+{% endblock %}

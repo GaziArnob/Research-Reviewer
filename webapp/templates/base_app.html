@@ -1,0 +1,40 @@
+{% from "_macros.html" import icon, alert %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf" content="{{ csrf }}">
+  <meta name="robots" content="noindex">
+  <title>{% block title %}Dashboard{% endblock %} · {{ brand }}</title>
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+{% include "_sprite.html" %}
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="/app"><img class="logo" src="/static/logo.svg" alt="">{{ brand }}</a>
+    <nav aria-label="App">
+      <a href="/app" class="{{ 'active' if path == '/app' }}">{{ icon('home') }}Dashboard</a>
+      <a href="/app/new" class="{{ 'active' if path == '/app/new' }}">{{ icon('upload') }}New review</a>
+      <a href="/app/papers" class="{{ 'active' if path.startswith('/app/papers') }}">{{ icon('list') }}Papers</a>
+      <a href="/app/convert" class="{{ 'active' if path == '/app/convert' }}">{{ icon('clipboard') }}Convert format</a>
+      <div class="nav-label">Account</div>
+      <a href="/app/settings" class="{{ 'active' if path.startswith('/app/settings') }}">{{ icon('sliders') }}Settings</a>
+      {% if user.role == 'admin' %}<a href="/app/admin" class="{{ 'active' if path.startswith('/app/admin') }}">{{ icon('shield') }}Admin</a>{% endif %}
+      <a href="/trust">{{ icon('book') }}Trust &amp; privacy</a>
+    </nav>
+    {% if quota is defined %}<div class="quota">{{ plan_of(user.plan).name }} plan ·
+      {% if quota is none %}unlimited papers{% else %}{{ quota }} paper{{ '' if quota == 1 else 's' }} left this month{% endif %}</div>{% endif %}
+    <div class="me"><strong>{{ user.name }}</strong><span>{{ user.email }}</span>
+      <form method="post" action="/logout">{% from "_macros.html" import csrf_input with context %}{{ csrf_input() }}
+        <button class="btn btn-sm" type="submit">{{ icon('logout') }}Sign out</button></form></div>
+  </aside>
+  <div class="main">
+    {% for f in flashes %}{{ alert(f.kind, f.text) }}{% endfor %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+<script src="/static/js/app.js" defer></script>
+</body>
+</html>

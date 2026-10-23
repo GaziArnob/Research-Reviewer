@@ -1,0 +1,66 @@
+{
+  "id": "aaai26",
+  "name": "AAAI-26 submission",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://aaai.org/conference/aaai/aaai-26/submission-instructions/"
+    ],
+    "notes": "Verified on the official submission instructions: up to 7 pages of technical content plus extra pages only for references and the reproducibility checklist, double-blind (remove author and affiliation), AAAI two-column camera-ready style, US Letter, Type 1 or TrueType fonts, no acknowledgements for review. The package name and the many mandatory preamble lines of the AAAI author kit (aaai26.sty) are NOT on the page: start from the kit's anonymous-submission template and paste the converted text into it."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [
+      "letterpaper"
+    ],
+    "preamble": [
+      "\\usepackage{aaai26}",
+      "\\usepackage{times}",
+      "\\usepackage{helvet}",
+      "\\usepackage{courier}",
+      "\\usepackage[hyphens]{url}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}",
+      "\\urlstyle{rm}",
+      "\\def\\UrlFont{\\rm}",
+      "\\frenchspacing"
+    ],
+    "author_style": "aaai",
+    "keywords_style": "none",
+    "class_file": "aaai26.sty (AAAI-26 author kit)",
+    "download": "https://aaai.org/authorkit26-1/"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Times",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "partial"
+  },
+  "limits": {
+    "main_pages": 7,
+    "text": "Up to 7 pages of technical content; extra pages only for references and the reproducibility checklist."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "Remove all author and affiliation information; omit acknowledgements."
+  },
+  "facts": [
+    {
+      "text": "Seven pages of technical content plus references and the reproducibility checklist.",
+      "status": "official"
+    },
+    {
+      "text": "Double-blind; two-column; US Letter; Type 1 or TrueType fonts.",
+      "status": "official"
+    },
+    {
+      "text": "Package aaai26 and the preamble lines.",
+      "status": "unverified"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{% extends "base_public.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="wrap"><div class="prose">
+  {% from "_macros.html" import alert %}
+  {{ alert('warn', 'Draft text. Have a lawyer review and complete this page, including the legal entity, the jurisdiction and the data-protection contact, before you operate the service for other people.') }}
+  <h1>{{ heading }}</h1>
+  {% if kind == 'privacy' %}
+  <h2>Data we hold</h2><p>Account data (name, email, password hash), the results extracted from papers you submit, your questions about papers and their answers, and an audit trail of actions. We do not store the uploaded PDF after processing.</p>
+  <h2>Why</h2><p>To provide the review assistance you ask for and to keep the service secure.</p>
+  <h2>Sharing</h2><p>Papers are not shared with other users. If online checks are on, the paper title, one abstract sentence and reference titles or DOIs are sent to Crossref, Semantic Scholar, arXiv and OpenAlex. No data is sent to an AI provider when the language model is self-hosted.</p>
+  <h2>Your rights</h2><p>You can export your data and delete papers or your account under Settings. Contact <a href="mailto:{{ support }}">{{ support }}</a> for anything else.</p>
+  {% else %}
+  <h2>Use of the service</h2><p>You may only upload manuscripts you are entitled to handle, for example papers assigned to you for review. You must follow the confidentiality and AI-use rules of the venue you review for.</p>
+  <h2>No warranty</h2><p>The service produces hints and extracted evidence that can be wrong or incomplete. You remain responsible for your review and decision.</p>
+  <h2>Accounts</h2><p>Keep your password private. We may suspend accounts that misuse the service.</p>
+  {% endif %}
+</div></div>
+{% endblock %}

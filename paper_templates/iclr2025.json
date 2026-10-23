@@ -1,0 +1,66 @@
+{
+  "id": "iclr2025",
+  "name": "ICLR 2025 submission",
+  "kind": "conference",
+  "anonymous_default": true,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://iclr.cc/Conferences/2025/CallForPapers",
+      "https://iclr.cc/Conferences/2025/AuthorGuide"
+    ],
+    "notes": "Verified on the official call for papers: main text between 6 and 10 pages (strictly enforced, 9 recommended), references unlimited, appendices unlimited, double-blind, template archive at github.com/ICLR/Master-Template (iclr2025.zip). The pages do NOT name the .sty file or give font/column rules: the name iclr2025_conference is the usual one and is unverified."
+  },
+  "latex": {
+    "documentclass": "article",
+    "options": [],
+    "preamble": [
+      "\\usepackage{iclr2025_conference,times}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}"
+    ],
+    "author_style": "iclr",
+    "keywords_style": "none",
+    "class_file": "iclr2025_conference.sty (download from the ICLR template archive)",
+    "download": "https://github.com/ICLR/Master-Template/raw/master/iclr2025.zip"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 1,
+    "font": "Times",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": 10,
+    "text": "Main text 6 to 10 pages inclusive (9 recommended); strictly enforced: an 11th page of main text is desk-rejected. References and appendices do not count."
+  },
+  "anonymity": {
+    "double_blind": true,
+    "text": "Anonymous submissions; cite your own earlier work in the third person."
+  },
+  "facts": [
+    {
+      "text": "Main text 6 to 10 pages, strictly enforced.",
+      "status": "official"
+    },
+    {
+      "text": "References and appendices unlimited.",
+      "status": "official"
+    },
+    {
+      "text": "Double-blind.",
+      "status": "official"
+    },
+    {
+      "text": "Template archive iclr2025.zip on GitHub (ICLR/Master-Template).",
+      "status": "official"
+    },
+    {
+      "text": "Style file name iclr2025_conference.sty; single column.",
+      "status": "unverified"
+    }
+  ]
+}

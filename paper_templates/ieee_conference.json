@@ -1,0 +1,66 @@
+{
+  "id": "ieee_conference",
+  "name": "IEEE conference paper (IEEEtran)",
+  "kind": "conference",
+  "anonymous_default": false,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://journals.ieeeauthorcenter.ieee.org/create-your-ieee-journal-article/authoring-tools-and-templates/tools-for-ieee-authors/ieee-article-templates/",
+      "https://www.ctan.org/pkg/ieeetran"
+    ],
+    "notes": "IEEE publishes its templates through the IEEE Template Selector (template-selector.ieee.org); the LaTeX class IEEEtran (CTAN, LPPL 1.3) supports IEEE transactions, journals and conferences. The class options, page size and fonts were NOT stated on the pages checked: they come from the IEEEtran documentation (IEEEtran_HOWTO.pdf) and must be checked there. Each conference also sets its own page limit and may override the template: follow its call for papers."
+  },
+  "latex": {
+    "documentclass": "IEEEtran",
+    "options": [
+      "conference"
+    ],
+    "preamble": [
+      "\\usepackage{cite}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}",
+      "\\usepackage{textcomp}"
+    ],
+    "author_style": "ieee",
+    "keywords_style": "ieee",
+    "class_file": "IEEEtran.cls (in TeX Live and MiKTeX)",
+    "download": "https://template-selector.ieee.org"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Times New Roman",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": null,
+    "text": "Set by each conference. Check its call for papers."
+  },
+  "anonymity": {
+    "double_blind": false,
+    "text": "Depends on the conference: many IEEE conferences are single-blind."
+  },
+  "facts": [
+    {
+      "text": "IEEE provides templates through the IEEE Template Selector.",
+      "status": "official"
+    },
+    {
+      "text": "IEEEtran is the IEEE class for transactions, journals and conferences (CTAN, v1.8b, LPPL 1.3).",
+      "status": "official"
+    },
+    {
+      "text": "Class option [conference], US Letter, two columns, Times 10 pt (from the IEEEtran documentation, not from the pages checked).",
+      "status": "unverified"
+    }
+  ],
+  "compile_check": {
+    "tool": "tectonic 0.17.0 (TeX bundle with the real class file)",
+    "date": "2026-10-24",
+    "result": "The generated main.tex compiled without errors on a real 15-page paper and rendered in two columns. This shows the class name and option are accepted; it does not show that the venue accepts the result."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "id": "ieee_journal",
+  "name": "IEEE journal / transactions article (IEEEtran)",
+  "kind": "journal",
+  "anonymous_default": false,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://journals.ieeeauthorcenter.ieee.org/create-your-ieee-journal-article/authoring-tools-and-templates/tools-for-ieee-authors/ieee-article-templates/",
+      "https://www.ctan.org/pkg/ieeetran"
+    ],
+    "notes": "Templates come from the IEEE Template Selector. The class option [journal] and the layout are NOT stated on the pages checked: confirm them in IEEEtran_HOWTO.pdf and in your journal's author instructions, which may add rules (length, review format)."
+  },
+  "latex": {
+    "documentclass": "IEEEtran",
+    "options": [
+      "journal"
+    ],
+    "preamble": [
+      "\\usepackage{cite}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{amsmath,amssymb}",
+      "\\usepackage{textcomp}"
+    ],
+    "author_style": "ieee",
+    "keywords_style": "ieee",
+    "class_file": "IEEEtran.cls (in TeX Live and MiKTeX)",
+    "download": "https://template-selector.ieee.org"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Times New Roman",
+    "font_pt": 10,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": null,
+    "text": "Set by the journal. Check its author instructions."
+  },
+  "anonymity": {
+    "double_blind": false,
+    "text": "Depends on the journal."
+  },
+  "facts": [
+    {
+      "text": "IEEE provides templates through the IEEE Template Selector.",
+      "status": "official"
+    },
+    {
+      "text": "IEEEtran supports IEEE transactions and journals (CTAN, v1.8b, LPPL 1.3).",
+      "status": "official"
+    },
+    {
+      "text": "Class option [journal], US Letter, two columns, Times 10 pt.",
+      "status": "unverified"
+    }
+  ],
+  "compile_check": {
+    "tool": "tectonic 0.17.0 (TeX bundle with the real class file)",
+    "date": "2026-10-24",
+    "result": "The generated main.tex compiled without errors on a real 15-page paper and rendered in two columns. This shows the class name and option are accepted; it does not show that the venue accepts the result."
+  }
+}

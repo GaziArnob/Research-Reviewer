@@ -1,0 +1,27 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, csrf_input with context %}
+{% from "_macros.html" import status_badge %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Admin</h1><p class="muted">Users, usage and system health.</p></div></div>
+<div class="grid grid-4">
+  <div class="stat"><div class="n">{{ users | length }}</div><div class="l">Users</div></div>
+  <div class="stat"><div class="n">{{ month }}</div><div class="l">Papers this month</div></div>
+  <div class="stat"><div class="n">{{ by_status.get('done', 0) }}</div><div class="l">Completed reviews</div></div>
+  <div class="stat"><div class="n">{{ by_status.get('failed', 0) }}</div><div class="l">Failed reviews</div></div>
+</div>
+<div class="grid grid-2">
+  <div class="card"><h2>System</h2><dl class="kv">{% for k, v in system.items() %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}</dl></div>
+  <div class="card"><h2>Recent failures</h2>
+    {% if failed %}{% for f in failed %}<p class="small"><strong>{{ f.filename }}</strong> <span class="muted">{{ f.created_at | ago }}</span><br><span class="muted">{{ f.error }}</span></p>{% endfor %}
+    {% else %}<p class="muted mb0">None.</p>{% endif %}</div>
+</div>
+<div class="card"><h2>Users</h2><div class="table-wrap"><table class="t">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Papers</th><th>Joined</th><th>Plan</th></tr></thead><tbody>
+  {% for u, n in users %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ n }}</td><td class="muted nowrap">{{ u.created_at | dt('%d %b %Y') }}</td>
+    <td><form method="post" action="/app/admin/users/{{ u.id }}/plan" class="row">{{ csrf_input() }}
+      <select name="plan" aria-label="Plan for {{ u.email }}">{% for k in plan_keys %}<option value="{{ k }}" {{ 'selected' if u.plan == k }}>{{ plans[k].name }}</option>{% endfor %}</select>
+      <button class="btn btn-sm" type="submit">Set</button></form></td></tr>{% endfor %}</tbody></table></div></div>
+<div class="card"><h2>Recent activity</h2><div class="table-wrap"><table class="t"><thead><tr><th>When</th><th>User</th><th>Action</th></tr></thead><tbody>
+  {% for e in events %}<tr><td class="nowrap muted">{{ e.created_at | dt }}</td><td>{{ e.user_id or '-' }}</td><td>{{ e.action | replace('_', ' ') }}</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

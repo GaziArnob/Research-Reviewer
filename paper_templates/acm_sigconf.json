@@ -1,0 +1,57 @@
+{
+  "id": "acm_sigconf",
+  "name": "ACM conference proceedings (acmart, sigconf)",
+  "kind": "conference",
+  "anonymous_default": false,
+  "provenance": {
+    "level": "partial",
+    "checked": "2026-10-24",
+    "official_urls": [
+      "https://www.ctan.org/pkg/acmart",
+      "https://www.acm.org/publications/proceedings-template"
+    ],
+    "notes": "The acm.org template page returned 403 (not readable). CTAN confirms the class acmart (v2.20, LPPL 1.3, in TeX Live and MiKTeX) but does not list its formats. The option [sigconf] and the ACM front matter (rights, CCS concepts) are from the acmart documentation and are NOT verified here. Many ACM conferences require review mode: add the `review` option and anonymize yourself."
+  },
+  "latex": {
+    "documentclass": "acmart",
+    "options": [
+      "sigconf"
+    ],
+    "preamble": [],
+    "author_style": "acmart",
+    "keywords_style": "acmart",
+    "class_file": "acmart.cls (in TeX Live and MiKTeX)",
+    "download": "https://www.acm.org/publications/proceedings-template"
+  },
+  "layout": {
+    "paper": "letter",
+    "columns": 2,
+    "font": "Linux Libertine",
+    "font_pt": 9,
+    "margins_cm": null,
+    "layout_status": "unverified"
+  },
+  "limits": {
+    "main_pages": null,
+    "text": "Set by each ACM conference."
+  },
+  "anonymity": {
+    "double_blind": false,
+    "text": "Depends on the conference; use the `anonymous,review` options when required."
+  },
+  "facts": [
+    {
+      "text": "acmart is the ACM class (CTAN v2.20, LPPL 1.3).",
+      "status": "official"
+    },
+    {
+      "text": "Format option sigconf; two columns.",
+      "status": "unverified"
+    }
+  ],
+  "compile_check": {
+    "tool": "tectonic 0.17.0 (TeX bundle with the real class file)",
+    "date": "2026-10-24",
+    "result": "The generated main.tex compiled without errors on a real 15-page paper and rendered in two columns. This shows the class name and option are accepted; it does not show that the venue accepts the result."
+  }
+}

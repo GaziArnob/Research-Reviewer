@@ -1,0 +1,56 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import icon, alert, csrf_input with context %}
+{% block title %}Convert format{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Convert to a venue template</h1>
+  <p class="muted">For authors: turn your own manuscript PDF into the layout of a conference or journal.</p></div></div>
+
+{{ alert('warn', 'Use this for your own paper. Do not reformat a manuscript that was sent to you for review: it is confidential.') }}
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>1. Your manuscript</h2>
+    <form method="post" action="/app/convert" enctype="multipart/form-data">
+      {{ csrf_input() }}
+      <div class="field"><label for="file">PDF file</label><input id="file" name="file" type="file" accept="application/pdf,.pdf" required>
+        <div class="hint">Up to {{ max_mb }} MB. Processed in memory and never stored.</div></div>
+      <div class="field"><label for="template">Target template</label>
+        <select id="template" name="template" required>
+          <option value="" disabled selected>Choose a venue</option>
+          {% for kind, label in [('conference', 'Conferences'), ('journal', 'Journals')] %}
+            <optgroup label="{{ label }}">{% for t in templates_ if t.kind == kind %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}</optgroup>
+          {% endfor %}
+        </select></div>
+      <div class="field"><label for="anonymize">Authors</label>
+        <select id="anonymize" name="anonymize"><option value="default">Venue default (double-blind venues are anonymized)</option>
+          <option value="yes">Anonymize (remove names, acknowledgements)</option><option value="no">Keep author names</option></select></div>
+      <div class="field"><label class="check"><input type="checkbox" name="docx" value="1" checked><span>Also make a Word file <span class="muted small">(plain layout, not the venue's own Word template)</span></span></label></div>
+      <button class="btn btn-primary btn-lg" type="submit">{{ icon('download') }}Convert and download ZIP</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>What you get</h2>
+    <ul>
+      <li><strong>main.tex</strong>: sections, abstract, numbered citations as <code>\cite</code>, the reference list, in the venue's preamble.</li>
+      <li><strong>images/</strong>: embedded bitmap images, placed in the figures when each page has as many images as captions.</li>
+      <li><strong>main.docx</strong> and a <strong>CONVERSION_REPORT.md</strong> that lists everything to check.</li>
+    </ul>
+    <h3>What it cannot do</h3>
+    <ul class="muted">
+      <li>Equations, table contents and vector figures are not recovered from a PDF: you get placeholders or plain text.</li>
+      <li>Text after the reference list (appendices) is not converted.</li>
+      <li>The LaTeX is not compiled here, and each venue's style file must be downloaded from the venue.</li>
+      <li>Page limits are only estimated. Check the PDF you compile.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card"><h2>Templates</h2>
+  <p class="muted small">“Partly verified” means some rules were read from the official page and the rest (class options, style file names) were not. The report lists which is which.</p>
+  <div class="table-wrap"><table class="t"><thead><tr><th>Venue</th><th>Type</th><th>Check</th><th>Main-text limit</th><th>Anonymous</th><th>Style file</th></tr></thead><tbody>
+  {% for t in templates_ %}<tr><td><strong>{{ t.name }}</strong></td><td>{{ t.kind }}</td>
+    <td><span class="badge {{ 'b-ok' if t.provenance.level == 'verified' else 'b-warn' }}">{{ 'Verified' if t.provenance.level == 'verified' else 'Partly verified' }}</span></td>
+    <td>{{ (t.limits.main_pages ~ ' pages') if t.limits.main_pages else 'set by the venue' }}</td><td>{{ 'yes' if t.anonymity.double_blind else 'depends' }}</td>
+    <td class="small">{{ t.latex.class_file }}{% if t.latex.download %}<br><a href="{{ t.latex.download }}" rel="noopener noreferrer" target="_blank">download</a>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div></div>
+{% endblock %}
