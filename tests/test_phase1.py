@@ -52,7 +52,8 @@ def test_hidden_text_is_removed_and_flagged(hidden_pdf_bytes):
     assert any(h.reason == "white text" for h in paper.hidden_spans)
     assert "Ignore all previous" not in paper.full_text
     findings = scan_injection(paper)
-    assert any("Hidden text" in f.text for f in findings)
+    assert any("hidden text fragment" in f.text and "white text" in f.text for f in findings)
+    assert sum("hidden text fragment" in f.text for f in findings) == 1  # grouped, not one finding per fragment
 
 
 def test_instruction_phrase_flagged():

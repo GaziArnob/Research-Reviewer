@@ -1,12 +1,12 @@
 import requests
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
-from sqlalchemy import func, select, text
+from sqlalchemy import case, func, select, text
 from sqlalchemy.orm import Session
 
 from core.config import settings as core_settings
 from core.llm.router import get_llm
-from webapp.db import Event, Submission, User, log_event
+from webapp.db import Event, Feedback, Submission, User, log_event
 from webapp.deps import csrf_protect, flash, get_db, render, require_admin
 from webapp.plans import PLANS
 from webapp.services import month_start
@@ -38,11 +38,16 @@ def admin(request: Request, user: User = Depends(require_admin), s: Session = De
         db_state = "connected"
     except Exception:  # noqa: BLE001
         db_state = "error"
+    fb_rows = []
+    for module, votes, useful in s.execute(select(Feedback.module, func.count(Feedback.id),
+                                                  func.sum(case((Feedback.verdict > 0, 1), else_=0))).group_by(Feedback.module)).all():
+        fb_rows.append({"module": module, "votes": votes, "useful": int(useful or 0), "rate": round(100 * int(useful or 0) / votes)})
+    fb_rows.sort(key=lambda r: -r["votes"])
     system = {"Database": db_state, "Language model": f"{get_llm().name} / {getattr(get_llm(), 'model', '-')}",
               "Ollama": _ollama_status(), "Online checks default": "on" if core_settings.online_checks else "off",
               "OCR": "on" if core_settings.ocr_enabled else "off"}
     return render(request, "admin.html", users=users, by_status=by_status, month=month, failed=failed, events=events,
-                  system=system, plan_keys=list(PLANS))
+                  system=system, plan_keys=list(PLANS), feedback_rows=fb_rows)
 
 
 @router.post("/users/{uid}/plan", dependencies=[Depends(csrf_protect)])

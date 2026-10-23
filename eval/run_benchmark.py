@@ -25,10 +25,13 @@ def pick_sample(papers: list[dict], limit: int | None) -> list[dict]:
     return [ranked[round(i * step)] for i in range(limit)]
 
 
-def main(limit: int | None, use_llm: bool, online: bool) -> None:
+def main(limit: int | None, use_llm: bool, online: bool, subset_of: str | None = None, tag: str = "") -> None:
     papers = json.loads((BENCH / "papers.json").read_text(encoding="utf-8"))
+    if subset_of:  # re-run papers that already have results in another folder, so the two runs can be compared
+        have = {f.stem for f in (BENCH / subset_of).glob("*.json")}
+        papers = [p for p in papers if p["id"] in have]
     sample = pick_sample(papers, limit)
-    out_dir = BENCH / ("results_llm" if use_llm else "results_rules")
+    out_dir = BENCH / (("results_llm" if use_llm else "results_rules") + tag)
     out_dir.mkdir(exist_ok=True)
     llm = get_llm() if use_llm else None
     if use_llm and llm.name == "none":
@@ -53,5 +56,7 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--llm", action="store_true")
     ap.add_argument("--online", action="store_true", help="also run Crossref / related-paper searches (slow)")
+    ap.add_argument("--subset-of", default=None, help="only papers that have results in this folder")
+    ap.add_argument("--tag", default="", help="suffix of the output folder, e.g. _c3")
     a = ap.parse_args()
-    main(a.limit, a.llm, a.online)
+    main(a.limit, a.llm, a.online, a.subset_of, a.tag)

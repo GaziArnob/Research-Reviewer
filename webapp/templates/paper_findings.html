@@ -1,5 +1,5 @@
 {% extends "paper_base.html" %}
-{% from "_macros.html" import icon, finding %}
+{% from "_macros.html" import icon, finding, csrf_input with context %}
 {% block tab %}
 {% if res %}
   {% if items %}
@@ -13,7 +13,12 @@
     </div>
     <p class="muted small mb0">Showing <strong id="shown-count">{{ items | length }}</strong> of {{ items | length }}. “Quote verified” means the quote exists in the paper; the judgement is still the tool’s.</p>
   </div>
-  {% for f in items %}{{ finding(f) }}{% endfor %}
+  <details class="card"><summary>Highlight the evidence in your PDF</summary>
+    <p class="muted small">Upload the same PDF again. Every quote used as evidence is highlighted with the finding as a note. The file is not stored.</p>
+    <form method="post" action="/app/papers/{{ sub.id }}/annotate" enctype="multipart/form-data" class="row">
+      {{ csrf_input() }}<input type="file" name="file" accept="application/pdf,.pdf" required>
+      <button class="btn btn-primary btn-sm" type="submit">{{ icon('download') }}Download annotated PDF</button></form></details>
+  {% for f in items %}{{ finding(f, sub.id, fb) }}{% endfor %}
   {% else %}<div class="empty">{{ icon('check') }}<h3>No findings</h3></div>{% endif %}
 {% else %}<div class="empty">{{ icon('clock') }}<h3>Not ready yet</h3></div>{% endif %}
 {% endblock %}

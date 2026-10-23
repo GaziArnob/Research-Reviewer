@@ -251,3 +251,49 @@ def test_convert_page_and_download(client):
     assert bad.status_code == 303 and "not a PDF" in client.get("/app/convert").text
     with db.session() as s:
         assert s.query(db.Event).filter_by(action="paper_converted").count() == 1
+
+
+def test_feedback_votes_and_annotated_pdf(client):
+    import io as _io
+    import pymupdf
+    signup(client)
+    pdf = make_pdf()
+    pid = paper_id(upload(client, pdf=pdf))
+    with db.session() as s:
+        sub = s.get(db.Submission, pid)
+        findings = sub.result["findings"]
+    assert findings
+    page = client.get(f"/app/papers/{pid}/findings").text
+    assert 'data-verdict="1"' in page and "Highlight the evidence in your PDF" in page
+    headers = {"X-CSRF-Token": token(client, "/app"), "Content-Type": "application/json"}
+    fid = findings[0]["id"]
+    vote = lambda body: client.post(f"/app/papers/{pid}/feedback", content=json.dumps(body), headers=headers)
+    assert vote({"finding_id": fid, "verdict": 1}).status_code == 200
+    assert vote({"finding_id": fid, "verdict": -1}).status_code == 200  # changing the vote does not add a row
+    assert vote({"finding_id": "nope", "verdict": 1}).status_code == 400
+    assert vote({"finding_id": fid, "verdict": 5}).status_code == 400
+    assert client.post(f"/app/papers/{pid}/feedback", content="{}", headers={"Content-Type": "application/json"}).status_code == 403
+    with db.session() as s:
+        rows = s.query(db.Feedback).all()
+        assert len(rows) == 1 and rows[0].verdict == -1 and rows[0].module == findings[0]["module"]
+    assert 'aria-pressed="true"' in client.get(f"/app/papers/{pid}/findings").text
+    assert vote({"finding_id": fid, "verdict": 0}).status_code == 200
+    with db.session() as s:
+        assert s.query(db.Feedback).count() == 0
+    vote({"finding_id": fid, "verdict": 1})
+    admin = client.get("/app/admin").text
+    assert "How useful are the checks" in admin and findings[0]["module"] in admin
+
+    csrf = token(client, "/app")
+    ok = client.post(f"/app/papers/{pid}/annotate", data={"csrf": csrf}, files={"file": ("p.pdf", pdf, "application/pdf")})
+    assert ok.status_code == 200 and ok.headers["content-type"] == "application/pdf"
+    assert len(pymupdf.open(stream=_io.BytesIO(ok.content), filetype="pdf")) == len(pymupdf.open(stream=pdf, filetype="pdf"))
+    other = client.post(f"/app/papers/{pid}/annotate", data={"csrf": csrf}, files={"file": ("p.pdf", make_pdf(body_repeats=9), "application/pdf")})
+    assert other.status_code == 303 and "not the same file" in client.get(f"/app/papers/{pid}/findings").text
+
+    bob = TestClient(create_app(), follow_redirects=False)
+    with bob:
+        signup(bob, "b@example.com", "Bob")
+        bh = {"X-CSRF-Token": token(bob, "/app"), "Content-Type": "application/json"}
+        assert bob.post(f"/app/papers/{pid}/feedback", content=json.dumps({"finding_id": fid, "verdict": 1}), headers=bh).status_code == 404
+        assert bob.post(f"/app/papers/{pid}/annotate", data={"csrf": token(bob, "/app")}, files={"file": ("p.pdf", pdf, "application/pdf")}).status_code == 404

@@ -88,3 +88,15 @@ def verify_comments(paper: ParsedPaper, items: list[dict], module: str,
         else:
             dropped += 1
     return findings, dropped
+
+
+def find_pattern(paper: ParsedPaper, pattern: str, before: int = 60, after: int = 100,
+                 flags: int = re.I) -> Optional[Evidence]:
+    """First match of a regex in the body text, returned as an Evidence with page and section when it can be located."""
+    text = " ".join(paper.body_text.split())
+    m = re.search(pattern, text, flags)
+    if not m:
+        return None
+    snippet = text[max(0, m.start() - before): m.end() + after]
+    hit = locate(paper, snippet)
+    return hit[0] if hit else Evidence(quote=snippet[:260])

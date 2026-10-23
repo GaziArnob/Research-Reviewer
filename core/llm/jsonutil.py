@@ -30,12 +30,12 @@ def extract_json(text: str) -> Optional[dict]:
 
 
 def ask_json(llm: LLMClient, system: str, user: str, schema: Optional[dict] = None,
-             retries: int = 1) -> Optional[dict]:
+             retries: int = 1, temperature: float = 0.2) -> Optional[dict]:
     """Call the model and return parsed JSON, retrying once with a stricter reminder."""
     prompt = user
     for _ in range(retries + 1):
         try:
-            out = llm.complete(system, prompt, json_schema=schema, temperature=0.2)
+            out = llm.complete(system, prompt, json_schema=schema, temperature=temperature)
         except Exception:
             return None
         data = extract_json(out.text)

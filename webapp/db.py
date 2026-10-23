@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Iterator, Optional
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, event
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, create_engine, event
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
@@ -62,6 +62,20 @@ class Event(WBase):
     submission_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     action: Mapped[str] = mapped_column(String(60))
     detail: Mapped[Optional[dict]] = mapped_column(Json, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class Feedback(WBase):
+    """A reviewer's verdict on one finding (useful or not). Used to measure which checks deserve trust."""
+    __tablename__ = "web_feedback"
+    __table_args__ = (UniqueConstraint("user_id", "submission_id", "finding_id", name="uq_feedback"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    submission_id: Mapped[int] = mapped_column(Integer, index=True)
+    finding_id: Mapped[str] = mapped_column(String(16))
+    module: Mapped[str] = mapped_column(String(40))
+    kind: Mapped[str] = mapped_column(String(20))
+    verdict: Mapped[int] = mapped_column(Integer)  # 1 useful, -1 not useful
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

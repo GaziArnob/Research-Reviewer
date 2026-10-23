@@ -10,9 +10,9 @@ from core.models import Finding, ParsedPaper
 from core.prompts import load
 
 
-def run_reviewer(paper: ParsedPaper, llm: LLMClient) -> tuple[list[Finding], int]:
+def run_reviewer(paper: ParsedPaper, llm: LLMClient, temperature: float = 0.2) -> tuple[list[Finding], int]:
     """One reviewer pass. Unsupported comments are removed by the evidence verifier."""
-    data = ask_json(llm, load("review"), build_context(paper, REVIEW_PLAN))
+    data = ask_json(llm, load("review"), build_context(paper, REVIEW_PLAN), temperature=temperature)
     if not data:
         return [], 0
     items = []

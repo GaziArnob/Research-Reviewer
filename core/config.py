@@ -23,6 +23,7 @@ class Settings:
     max_refs_to_verify: int = int(os.getenv("MAX_REFS_TO_VERIFY", "60"))
     online_checks: bool = _bool("ONLINE_CHECKS", True)
     ocr_enabled: bool = _bool("OCR_ENABLED", True)
+    consensus_runs: int = int(os.getenv("LLM_CONSENSUS_RUNS", "1"))
 
 
 settings = Settings()

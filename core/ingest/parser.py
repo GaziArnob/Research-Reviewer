@@ -14,8 +14,8 @@ _TAB = re.compile(r"^Table\s+(\d+)", re.I | re.M)
 def _hidden_reason(span: dict, page_rect) -> str | None:
     if span["color"] == 0xFFFFFF:
         return "white text"
-    if span["size"] < 3:
-        return "tiny font"
+    if span["size"] < 3 and (span["bbox"][3] - span["bbox"][1]) < 4:
+        return "tiny font"  # text inside scaled figures has a tiny nominal size but is drawn large, so judge the drawn height
     x0, y0, x1, y1 = span["bbox"]
     if x1 < page_rect.x0 or x0 > page_rect.x1 or y1 < page_rect.y0 or y0 > page_rect.y1:
         return "outside page"

@@ -33,6 +33,19 @@ the tool does not compile for you; the venue's style file must be downloaded fro
 The PDF is converted in memory and never stored. Code: `core/convert/`; tests: `tests/test_convert.py`.
 There is no IEEE-conference *review* form: IEEE has no single reviewer form (each conference or journal sets its own), so only the paper templates cover IEEE conferences.
 
+## Making the results stronger (what exists and how well it worked)
+
+- **Speed:** reference lookups and related-paper search run in parallel (reference check about 80 s -> about 10 s on a 40-reference paper).
+- **More checks without a model:** `core/checks/methodology.py` (tuning on the test set, copied baselines, selected examples, human participants without ethics wording, pretrained models without contamination discussion) and an abstract-number consistency check. They are keyword hints with a quote.
+- **Related work from OpenAlex's citation graph** (`related_by_graph`), with abstracts, ahead of keyword search.
+- **Self-consistency:** `LLM_CONSENSUS_RUNS=3` runs the reviewer three times and keeps only points that two runs agree on (`core/review/consensus.py`). Test on 6 papers: it kept 18 weakness/question comments instead of 39 and their overlap with human reviews did not improve (5.6% vs 17.9%, too few papers to be sure), so it stays OFF by default and is not recommended with a 3B model.
+- **Annotated PDF:** on the Findings tab, upload the same PDF again and get it back with every evidence quote highlighted and the finding as a note. The hash must match the reviewed file; nothing is stored.
+- **Reviewer votes:** Useful / Not useful on every finding, summarised per check in the Admin page. This is how the checks can be judged on real use.
+- **Overlap with human reviews** (`python -m eval.fetch_reviews`, `python -m eval.overlap_report`): how much of what the official reviewers wrote is also said by the tool, compared with the chance level. `python -m eval.compare_models --models a b` compares local models the same way.
+- Tried and rejected: PyMuPDF's table finder cuts decimals and merges cells on real LaTeX papers, so tables are not converted automatically.
+
+Not done because they need a download or a service that is not here: a sentence-embedding or NLI model (PyTorch, about 2 GB), GROBID (needs Java), equation OCR (Nougat), other Ollama chat models for comparison.
+
 ## Setup (Windows, PowerShell)
 
 ```powershell

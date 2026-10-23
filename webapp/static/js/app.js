@@ -81,6 +81,25 @@
     }
   }
 
+  // Useful / not useful votes on findings.
+  document.querySelectorAll(".fb").forEach(function (box) {
+    box.querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var verdict = parseInt(btn.getAttribute("data-verdict"), 10);
+        var on = btn.getAttribute("aria-pressed") === "true";
+        fetch("/app/papers/" + box.getAttribute("data-sub") + "/feedback", {
+          method: "POST", credentials: "same-origin",
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+          body: JSON.stringify({ finding_id: box.getAttribute("data-finding"), verdict: on ? 0 : verdict })
+        }).then(function (r) {
+          if (!r.ok) return;
+          box.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+          if (!on) btn.setAttribute("aria-pressed", "true");
+        });
+      });
+    });
+  });
+
   // Confirm destructive actions.
   document.querySelectorAll("form[data-confirm]").forEach(function (f) {
     f.addEventListener("submit", function (ev) { if (!window.confirm(f.getAttribute("data-confirm"))) ev.preventDefault(); });

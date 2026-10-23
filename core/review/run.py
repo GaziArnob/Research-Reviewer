@@ -7,7 +7,9 @@ from core.analysis.understanding import summarize
 from core.llm.base import LLMClient
 from core.models import Claim, Finding, ParsedPaper, PipelineResult, Scores
 from core.prompts import PROMPT_VERSION
+from core.config import settings
 from core.review.agents import run_critic, run_reviewer
+from core.review.consensus import merge_runs
 from core.review.checklist import run_checklist
 from core.review.scoring import calibrate, draft_scores
 from core.storage.cache import Cache, make_key
@@ -42,11 +44,18 @@ def run_llm_review(paper: ParsedPaper, llm: LLMClient, cache: Cache, result: Pip
     c = cached("llm_claims", claims_stage, lambda v: bool(v["c"]) or v["dropped"] > 0)
     result.claims = [Claim(**x) for x in c["c"]]
 
+    runs = max(1, settings.consensus_runs)
+
     def review_stage() -> dict:
-        findings, dropped = run_reviewer(paper, llm)
+        if runs == 1:
+            findings, dropped = run_reviewer(paper, llm)
+        else:  # several samples at a higher temperature; only points that at least two runs agree on are kept
+            samples = [run_reviewer(paper, llm, temperature=0.7) for _ in range(runs)]
+            findings = merge_runs([f for f, _ in samples], min_votes=max(2, (runs + 1) // 2))
+            dropped = sum(d for _, d in samples)
         return {"f": [f.model_dump() for f in findings], "dropped": dropped}
 
-    r = cached("llm_review", review_stage, lambda v: bool(v["f"]) or v["dropped"] > 0)
+    r = cached("llm_review" if runs == 1 else f"llm_review_c{runs}", review_stage, lambda v: bool(v["f"]) or v["dropped"] > 0)
     review_findings = [Finding(**x) for x in r["f"]]
 
     def critic_stage() -> dict:

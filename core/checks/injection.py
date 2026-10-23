@@ -18,12 +18,17 @@ def scan_injection(paper: ParsedPaper) -> list[Finding]:
     """Flag hidden text and instruction-like phrases aimed at AI reviewers."""
     findings: list[Finding] = []
 
-    for span in paper.hidden_spans:
+    # Hidden fragments are common and harmless in figures (white labels on dark fills). Only sentence-like ones, or
+    # ones that read as instructions, are worth a reviewer's attention, and they are reported once per reason.
+    relevant = [h for h in paper.hidden_spans if len(h.text) >= 25 or any(p.search(h.text) for p in _COMPILED)]
+    for reason in sorted({h.reason for h in relevant}):
+        group = [h for h in relevant if h.reason == reason]
+        pages = sorted({h.page for h in group})
         findings.append(Finding(
             module="injection", kind="flag", status="verified",
-            text=f"Hidden text on page {span.page} ({span.reason}); it was removed before analysis.",
-            evidence=[Evidence(quote=span.text[:200], page=span.page)],
-        ))
+            text=f"{len(group)} hidden text fragment(s) ({reason}) on page(s) {', '.join(map(str, pages[:6]))}; "
+                 "they were removed before analysis. Look at them if the paper is not a figure-heavy one.",
+            evidence=[Evidence(quote=h.text[:200], page=h.page) for h in group[:3]]))
 
     for page_no, page in enumerate(paper.pages, start=1):
         for pattern in _COMPILED:

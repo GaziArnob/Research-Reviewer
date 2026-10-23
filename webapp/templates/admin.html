@@ -16,6 +16,11 @@
     {% if failed %}{% for f in failed %}<p class="small"><strong>{{ f.filename }}</strong> <span class="muted">{{ f.created_at | ago }}</span><br><span class="muted">{{ f.error }}</span></p>{% endfor %}
     {% else %}<p class="muted mb0">None.</p>{% endif %}</div>
 </div>
+<div class="card"><h2>How useful are the checks? (reviewer votes)</h2>
+  {% if feedback_rows %}<div class="table-wrap"><table class="t"><thead><tr><th>Check</th><th>Votes</th><th>Useful</th></tr></thead><tbody>
+    {% for r in feedback_rows %}<tr><td>{{ r.module }}</td><td>{{ r.votes }}</td><td>{{ r.rate }}% <progress max="100" value="{{ r.rate }}"></progress></td></tr>{% endfor %}</tbody></table></div>
+    <p class="muted small mb0">Few votes mean little: read these numbers only after dozens of votes per check.</p>
+  {% else %}<p class="muted mb0">No votes yet. Reviewers vote with the Useful / Not useful buttons on the Findings page.</p>{% endif %}</div>
 <div class="card"><h2>Users</h2><div class="table-wrap"><table class="t">
   <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Papers</th><th>Joined</th><th>Plan</th></tr></thead><tbody>
   {% for u, n in users %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ n }}</td><td class="muted nowrap">{{ u.created_at | dt('%d %b %Y') }}</td>

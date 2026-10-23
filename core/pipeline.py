@@ -2,6 +2,7 @@ from typing import Callable, Optional
 
 from core.analysis.literature import publication_trends, uncited_similar
 from core.checks.injection import scan_injection
+from core.checks.methodology import run_consistency, run_methodology
 from core.checks.preflight import run_preflight
 from core.checks.reproducibility import run_reproducibility
 from core.checks.statistics import run_statistics
@@ -103,6 +104,8 @@ def run_pipeline(pdf_bytes: bytes, filename: str = "paper.pdf", *,
     local("reproducibility", run_reproducibility)
     local("statistics", run_statistics)
     local("writing", run_writing_checks)
+    local("methodology", run_methodology)
+    local("consistency", run_consistency)
     local("citations", match_citations)
 
     if online:

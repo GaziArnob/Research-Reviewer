@@ -8,7 +8,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from core.annotate import annotate_pdf
 from core.assistant.agent import answer_question
+from core.ingest.loader import sha256_of
 from core.convert.bundle import ConversionError, convert_pdf
 from core.convert.templates import list_paper_templates
 from core.ingest.loader import _ARXIV_ID
@@ -17,7 +19,7 @@ from core.pipeline import get_parsed
 from core.templates.loader import list_templates, load_template
 from core.templates.render import build_form, to_docx, to_markdown
 from webapp import jobs
-from webapp.db import Event, Submission, User, log_event, utcnow
+from webapp.db import Event, Feedback, Submission, User, log_event, utcnow
 from webapp.deps import csrf_protect, flash, get_db, render, require_user
 from webapp.security import hash_password, password_problem, verify_password
 from webapp.services import delete_submission, owned_submission, quota_left, result_of, used_this_month
@@ -152,9 +154,59 @@ def findings(request: Request, sub_id: int, user: User = Depends(require_user), 
     res = ctx["res"]
     order = {"major": 0, "minor": 1, "question": 2, "strength": 3, "flag": 4}
     items = sorted(res.findings, key=lambda f: (order.get(f.kind, 9), f.module)) if res else []
+    fb = {r.finding_id: r.verdict for r in s.scalars(
+        select(Feedback).where(Feedback.user_id == user.id, Feedback.submission_id == sub_id))}
     ctx.update(items=items, kinds=sorted({f.kind for f in items}, key=lambda k: order.get(k, 9)),
-               states=sorted({f.status for f in items}))
+               states=sorted({f.status for f in items}), fb=fb)
     return render(request, "paper_findings.html", **ctx)
+
+
+@router.post("/papers/{sub_id}/feedback", dependencies=[Depends(csrf_protect)])
+async def feedback(request: Request, sub_id: int, user: User = Depends(require_user), s: Session = Depends(get_db)):
+    sub = owned_submission(s, user, sub_id)
+    body = await request.json()
+    res = result_of(sub)
+    finding = next((f for f in (res.findings if res else []) if f.id == str(body.get("finding_id", ""))), None)
+    verdict = body.get("verdict")
+    if finding is None or verdict not in (1, -1, 0):
+        raise HTTPException(400, "Unknown finding or verdict")
+    row = s.scalar(select(Feedback).where(Feedback.user_id == user.id, Feedback.submission_id == sub_id,
+                                          Feedback.finding_id == finding.id))
+    if verdict == 0:
+        if row:
+            s.delete(row)
+    elif row:
+        row.verdict = verdict
+    else:
+        s.add(Feedback(user_id=user.id, submission_id=sub_id, finding_id=finding.id, module=finding.module,
+                       kind=finding.kind, verdict=verdict))
+    return {"ok": True}
+
+
+@router.post("/papers/{sub_id}/annotate", dependencies=[Depends(csrf_protect)])
+async def annotate(request: Request, sub_id: int, file: UploadFile = File(None), user: User = Depends(require_user),
+                   s: Session = Depends(get_db)):
+    """Highlights the evidence quotes in the user's own copy of the PDF. The tool deletes the PDF after the review,
+    so the same file is uploaded again and checked against the stored hash. Nothing is kept."""
+    sub = owned_submission(s, user, sub_id)
+    res = result_of(sub)
+
+    def back(msg: str):
+        flash(request, "bad", msg)
+        return RedirectResponse(f"/app/papers/{sub_id}/findings", status_code=303)
+
+    if res is None or file is None or not file.filename:
+        return back("Choose the PDF of this paper.")
+    data = await file.read(web.max_upload_mb * 1024 * 1024 + 1)
+    if len(data) > web.max_upload_mb * 1024 * 1024 or not data.startswith(b"%PDF"):
+        return back("That is not a PDF within the size limit.")
+    if sha256_of(data) != sub.sha256:
+        return back("This is not the same file that was reviewed (its hash differs). Upload the original PDF.")
+    out, stats = annotate_pdf(data, res.findings)
+    log_event(s, user.id, "annotated_pdf", sub.id, stats)
+    name = re.sub(r"[^\w\-]", "_", (sub.title or sub.filename)[:50]) or "paper"
+    return Response(out, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{name}_annotated.pdf"'})
 
 
 @router.get("/papers/{sub_id}/evidence")
