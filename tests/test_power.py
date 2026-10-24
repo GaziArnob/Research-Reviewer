@@ -124,3 +124,29 @@ def test_overlap_metric_beats_chance_only_for_real_matches():
     generic = {k: [("writing", "The paper has long sentences and some typos here")] for k in human}
     res2 = evaluate(generic, human, chance_rounds=10)
     assert res2["recall"][0.25] == 0.0 and res2["precision"][0.25] == 0.0
+
+
+def test_completeness_checklist_counts_items_and_is_not_a_quality_score():
+    from core.checks.completeness import run_completeness
+    full = _paper("Code is available at github.com/x/y. We use the CIFAR dataset with a train/validation split. "
+                  "We compare against strong baselines and run an ablation. Accuracy is the metric. "
+                  "Limitations are discussed. Results are averaged over 5 runs with standard deviation.")
+    r = run_completeness(full)
+    by_id = {i["id"]: i["answer"] for i in r["items"]}
+    assert by_id["code_available"] == "yes" and by_id["ablation"] == "yes" and by_id["seeds"] == "no"
+    assert r["total"] == len(r["items"]) == 15 and r["yes"] + r["partial"] + r["missing"] == 15
+    empty = run_completeness(_paper("We study a problem."))
+    assert empty["yes"] == 0 and empty["missing"] == 15
+
+
+def test_overlap_critique_filter_drops_summary_sentences(tmp_path):
+    import json
+    from eval.overlap import human_sentences, is_critique
+    assert not is_critique("This paper proposes a new method for training deep networks on small data.")
+    assert is_critique("However, the experiments only use one small dataset and lack any ablation study.")
+    (tmp_path / "reviews").mkdir()
+    (tmp_path / "reviews" / "p.json").write_text(json.dumps({"paper_id": "p", "comments": [
+        "This paper proposes a new method for training deep networks on small data. "
+        "However, the experiments only use one small dataset and lack any ablation study."]}))
+    assert len(human_sentences("p", tmp_path)) == 2
+    assert len(human_sentences("p", tmp_path, critique_only=True)) == 1

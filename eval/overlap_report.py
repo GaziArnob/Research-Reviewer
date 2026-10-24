@@ -23,12 +23,13 @@ if __name__ == "__main__":
     ap.add_argument("--dir", action="append", default=None)
     ap.add_argument("--exclude-module", action="append", default=[])
     ap.add_argument("--kinds", default="", help="comma list, e.g. major,minor,question (default: all)")
+    ap.add_argument("--critique-only", action="store_true", help="count only human sentences that criticise or ask")
     a = ap.parse_args()
     kinds = set(a.kinds.split(",")) if a.kinds else None
     out = ["# Overlap with human reviews", ""]
     for d in a.dir or ["results_rules", "results_llm"]:
         tool = load_tool(d, set(a.exclude_module), kinds)
-        human = {pid: human_sentences(pid) for pid in tool}
+        human = {pid: human_sentences(pid, critique_only=a.critique_only) for pid in tool}
         out.append(format_report(d, evaluate(tool, human)))
         out.append("")
     text = "\n".join(out)

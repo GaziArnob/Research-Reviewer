@@ -20,14 +20,26 @@ BENCH = Path(__file__).resolve().parent.parent / "data" / "benchmark"
 THRESHOLDS = (0.25, 0.35)
 
 
-def human_sentences(paper_id: str, root: Path = BENCH) -> list[str]:
+_CRITIQUE = re.compile(
+    r"\b(?:however|but|lack(?:s|ing)?|unclear|not clear|missing|does not|do not|did not|doesn't|should|could|would be|"
+    r"limited|only|unconvincing|weak(?:ness)?|concern|not (?:convinced|sure|enough|well)|no (?:comparison|evidence|analysis)|"
+    r"insufficient|fail(?:s|ed)?|why|how|what|unfortunately|confus|question|suggest|need(?:s)?)\b", re.I)
+_SUMMARY = re.compile(r"^\s*(?:this|the) (?:paper|work|authors?|manuscript|article)\s+(?:propos|present|introduc|describ|studi|investigat|develop|address)", re.I)
+
+
+def is_critique(sentence: str) -> bool:
+    """Heuristic: a sentence that points at a problem or asks something, not one that restates the paper."""
+    return bool(_CRITIQUE.search(sentence)) and not _SUMMARY.search(sentence)
+
+
+def human_sentences(paper_id: str, root: Path = BENCH, critique_only: bool = False) -> list[str]:
     f = root / "reviews" / f"{paper_id}.json"
     if not f.exists():
         return []
     out = []
     for comment in json.loads(f.read_text(encoding="utf-8"))["comments"]:
         for s in re.split(r"(?<=[.!?])\s+|\n+", comment or ""):
-            if len(s.split()) >= 8:
+            if len(s.split()) >= 8 and (not critique_only or is_critique(s)):
                 out.append(s.strip())
     return out
 

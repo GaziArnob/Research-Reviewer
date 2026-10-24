@@ -91,6 +91,14 @@ CHECKS: dict[str, Check] = {
     "limitations": _present(r"\blimitations?\b|\bshortcomings?\b", "The paper mentions its limitations.",
                             "No limitations discussion found."),
     "references_exist": _references_exist,
+    "split": _present(r"train(?:ing)?[/ ,-]+(?:val(?:idation)?|dev)|test split|held[- ]out|cross[- ]validation|validation set|development set",
+                      "A data split or validation set is mentioned.", "No train/validation/test split found."),
+    "baselines": _present(r"\bbaselines?\b|compared (?:with|to|against)|previous (?:work|methods|approaches|models)\b",
+                          "A comparison with other methods is described.", "No comparison with other methods found."),
+    "ablation": _present(r"ablat|model variations|we (?:vary|varied)|leave[- ]one[- ]out|removing (?:the )?",
+                         "An ablation or component analysis is mentioned.", "No ablation or component analysis found."),
+    "ethics": _present(r"\bethic|broader impact|societal impact|responsible",
+                       "Ethics or broader impact is mentioned.", "No ethics or broader-impact wording found."),
 }
 
 

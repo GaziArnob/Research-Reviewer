@@ -34,14 +34,18 @@
     <a class="btn" href="/app/papers/{{ sub.id }}/ask">Ask the paper</a></div>
 </div>
 
-{% if res.scores %}
-<details class="card"><summary>Draft scores (optional, not reliable)</summary>
-  <div class="alert a-warn">{{ icon('alert') }}<div>On a benchmark of 20 ICLR 2017 papers, the local model's scores did not track human reviewers. Ratings and recommendations are never filled in on venue forms. Shown only for transparency.</div></div>
-  <div class="grid grid-4">
-    {% for label, v in [('Technical', res.scores.technical), ('Novelty', res.scores.novelty), ('Methodology', res.scores.methodology), ('Clarity', res.scores.clarity)] %}
-      <div class="stat"><div class="n">{{ v }}</div><div class="l">{{ label }}</div></div>{% endfor %}
-  </div>
-</details>
+{% if res.completeness and res.completeness.items %}
+{% set c = res.completeness %}
+<div class="card"><div class="card-head"><h2>Reporting checklist</h2>
+  <span class="badge {{ 'b-ok' if c.fraction >= 0.8 else 'b-warn' if c.fraction >= 0.5 else 'b-bad' }}">{{ c.yes }} of {{ c.total }} items found{% if c.partial %}, {{ c.partial }} partly{% endif %}</span></div>
+  <progress max="{{ c.total }}" value="{{ c.yes + c.partial * 0.5 }}">{{ c.yes }} of {{ c.total }}</progress>
+  <p class="muted small">Whether the paper <em>mentions</em> each standard item (keyword search, with the quote). It is not a quality score: it does not judge whether what is written is good, or whether an item applies to this paper.</p>
+  <div class="table-wrap"><table class="t"><tbody>
+  {% for i in c['items'] %}<tr><td>{{ i.label }}</td>
+    <td class="nowrap"><span class="badge {{ 'b-ok' if i.answer == 'yes' else 'b-warn' if i.answer == 'partial' else 'b-bad' }}">{{ {'yes': 'Found', 'partial': 'Partly', 'no': 'Not found'}[i.answer] }}</span></td>
+    <td class="small muted">{% if i.quote %}“{{ i.quote }}”{% if i.page %} (page {{ i.page }}){% endif %}{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
 {% endif %}
 {% elif sub.status in ('done',) %}<div class="empty">No result stored.</div>{% endif %}
 {% endblock %}

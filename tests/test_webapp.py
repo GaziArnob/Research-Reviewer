@@ -113,6 +113,7 @@ def test_upload_review_pages_exports_and_delete(client):
     assert not jobs.upload_path(pid).exists()  # the PDF is deleted after processing
     page = client.get(f"/app/papers/{pid}")
     assert page.status_code == 200 and "Ready" in page.text and "A Neural Ranking Study" in page.text
+    assert "Reporting checklist" in page.text and "Draft scores" not in page.text
     for tab in ("findings", "evidence", "literature", "ask", "form", "activity"):
         assert client.get(f"/app/papers/{pid}/{tab}").status_code == 200, tab
     assert "Reproducibility" in client.get(f"/app/papers/{pid}/findings").text or "reproducibility" in client.get(f"/app/papers/{pid}/findings").text

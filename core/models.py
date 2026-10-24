@@ -119,6 +119,7 @@ class PipelineResult(BaseModel):
     findings: list[Finding] = Field(default_factory=list)
     related: list[RelatedPaper] = Field(default_factory=list)
     trends: dict = Field(default_factory=dict)
+    completeness: dict = Field(default_factory=dict)
     understanding: Optional[dict] = None
     claims: list[Claim] = Field(default_factory=list)
     scores: Optional[Scores] = None
