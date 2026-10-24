@@ -1,0 +1,8 @@
+# Caddy gets and renews the HTTPS certificate by itself. DOMAIN comes from .env.prod.
+{$DOMAIN} {
+	encode gzip
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy web:8000
+}

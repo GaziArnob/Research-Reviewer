@@ -1,0 +1,76 @@
+# Whole stack on one server: web app, PostgreSQL, Ollama (local language model), Caddy (HTTPS).
+# Only Caddy is reachable from the internet (ports 80 and 443). Everything else stays inside the compose network.
+# Use:  docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reviewer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: reviewer
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviewer"]
+      interval: 10s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: 24h      # keep the model in memory between reviews
+      OLLAMA_NUM_PARALLEL: "1"    # one review at a time: a free CPU server cannot do more
+    volumes:
+      - ollama:/root/.ollama
+
+  ollama-pull:                    # downloads the model once, then exits
+    image: ollama/ollama:latest
+    depends_on: [ollama]
+    restart: "no"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c", "until ollama list >/dev/null 2>&1; do sleep 2; done; ollama pull ${OLLAMA_MODEL:-qwen2.5:3b}"]
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://reviewer:${POSTGRES_PASSWORD}@db:5432/reviewer
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env.prod (at least 32 random characters)}
+      COOKIE_SECURE: "true"
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      SUPPORT_EMAIL: ${CONTACT_EMAIL:-support@example.com}
+      LLM_PROVIDER: ollama
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      OLLAMA_NUM_CTX: ${OLLAMA_NUM_CTX:-8192}
+      JOB_WORKERS: "1"
+    volumes:
+      - uploads:/app/data/uploads
+      - cache:/app/data/cache
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [web]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env.prod}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+
+volumes:
+  pgdata:
+  ollama:
+  uploads:
+  cache:
+  caddy_data:

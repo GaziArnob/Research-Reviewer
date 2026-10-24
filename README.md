@@ -145,3 +145,7 @@ To add a venue, copy a template JSON, fill the fields from the official reviewer
 ## What Phase 1 does
 
 Parse PDF (hidden text removed) → validation → injection scan → preflight → reproducibility and statistics hints → citation matching → Crossref reference check → related-paper search (Semantic Scholar, arXiv, OpenAlex) → findings with status labels and JSON export. Results are cached in PostgreSQL.
+
+## Deploy
+
+See [DEPLOY.md](DEPLOY.md): the whole stack (web app, PostgreSQL, Ollama, HTTPS) on one free Oracle Cloud server with `docker-compose.prod.yml`.

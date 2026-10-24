@@ -15,3 +15,4 @@ tools/
 *.log
 data/*.db
 data/calibration.json
+.env.prod
