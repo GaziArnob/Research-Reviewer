@@ -8,6 +8,7 @@ data/cache/
 data/pgdata/
 data/pg.log
 data/benchmark/
+data/gold/
 data/calibration.json.bak
 tools/
 .claude/

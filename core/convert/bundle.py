@@ -56,7 +56,8 @@ def _anonymity_warnings(doc) -> list[str]:
     return found
 
 
-def convert_pdf(pdf: bytes, filename: str, template_id: str, anonymous: bool | None = None, with_docx: bool = True) -> Conversion:
+def convert_pdf(pdf: bytes, filename: str, template_id: str, anonymous: bool | None = None, with_docx: bool = True,
+                tables: bool = False) -> Conversion:
     tpl = load_paper_template(template_id)
     anonymous = tpl.anonymous_default if anonymous is None else anonymous
     parsed = parse_pdf(pdf, filename)
@@ -68,12 +69,59 @@ def convert_pdf(pdf: bytes, filename: str, template_id: str, anonymous: bool | N
         raise ConversionError("Too little text could be read from this PDF to convert it.")
 
     doc = build_document(parsed, pdf)
+    extra = [f"{len(parsed.hidden_spans)} hidden text fragment(s) in the PDF were left out."] if parsed.hidden_spans else []
+    if tables:
+        extra += _rebuild_tables(doc, pdf)
+    return _finish(doc, tpl, filename, anonymous, with_docx, extra)
+
+
+def _rebuild_tables(doc, pdf: bytes) -> list[str]:
+    """Experimental: fill table placeholders with rows rebuilt from word positions (see core/convert/tables.py)."""
+    from core.convert.tables import recover_tables, to_tabular
+    grids = recover_tables(pdf)
+    blocks = [b for s in doc.sections for b in s.blocks if b.kind == "table"]
+    done = 0
+    for b in blocks:
+        if b.num in grids:
+            b.raw = to_tabular(grids[b.num])
+            done += 1
+    if not blocks:
+        return []
+    return [f"Table rebuilding (experimental): {done} of {len(blocks)} table(s) were rebuilt from text positions, the rest stay placeholders. "
+            "Check every rebuilt table against the PDF: merged cells and multi-line cells are often wrong."]
+
+
+SOURCE_SUFFIXES = (".tex", ".zip", ".docx")
+
+
+def convert_source(data: bytes, filename: str, template_id: str, anonymous: bool | None = None, with_docx: bool = True) -> Conversion:
+    """Convert LaTeX (.tex, or a .zip with the project) or Word (.docx) source. More reliable than a PDF."""
+    from core.convert.source import doc_from_docx, doc_from_latex
+    tpl = load_paper_template(template_id)
+    anonymous = tpl.anonymous_default if anonymous is None else anonymous
+    name = filename.lower()
+    try:
+        if name.endswith(".docx"):
+            doc = doc_from_docx(data)
+        elif name.endswith((".tex", ".zip")):
+            doc = doc_from_latex(data, filename)
+        else:
+            raise ConversionError("Upload a .tex file, a .zip of the LaTeX project, or a .docx file.")
+    except ConversionError:
+        raise
+    except (ValueError, zipfile.BadZipFile) as exc:
+        raise ConversionError(str(exc)) from exc
+    if doc.body_words < 150:
+        raise ConversionError("Too little text could be read from this file to convert it.")
+    return _finish(doc, tpl, filename, anonymous, with_docx, [])
+
+
+def _finish(doc, tpl: PaperTemplate, filename: str, anonymous: bool, with_docx: bool, extra_warnings: list[str]) -> Conversion:
     tex, stat = render_latex(doc, tpl, anonymous)
     warnings = list(doc.warnings)
     if anonymous:
         warnings += _anonymity_warnings(doc)
-    if parsed.hidden_spans:
-        warnings.append(f"{len(parsed.hidden_spans)} hidden text fragment(s) in the PDF were left out.")
+    warnings += extra_warnings
     if stat["non_ascii_left"]:
         warnings.append(f"{stat['non_ascii_left']} non-ASCII character(s) remain in the LaTeX: check the symbols after compiling.")
     if doc.references and stat["citations"] == 0:
@@ -93,14 +141,15 @@ def convert_pdf(pdf: bytes, filename: str, template_id: str, anonymous: bool | N
              "citations_converted": stat["citations"], "figures": sum(b.kind == "figure" for s in doc.sections for b in s.blocks),
              "figures_with_image": stat["figures_with_image"], "tables": sum(b.kind == "table" for s in doc.sections for b in s.blocks),
              "images_in_zip": len(doc.images), "estimate": est, "anonymous": anonymous}
-    report = make_report(tpl, filename, stats, warnings, with_docx)
+    report = make_report(tpl, filename, stats, warnings, with_docx, doc.stats.get("source", "pdf"))
     files["CONVERSION_REPORT.md"] = report.encode("utf-8")
     return Conversion(tpl, files, report, warnings, stats)
 
 
-def make_report(tpl: PaperTemplate, filename: str, stats: dict, warnings: list[str], with_docx: bool) -> str:
+def make_report(tpl: PaperTemplate, filename: str, stats: dict, warnings: list[str], with_docx: bool, source: str = "pdf") -> str:
+    what = "a PDF" if source == "pdf" else "your source file"
     L = [f"# Conversion report: {filename} -> {tpl.name}", "",
-         "This tool re-types the text of a PDF into the venue's layout. It is a starting point, not a finished submission. "
+         f"This tool re-types the text of {what} into the venue's layout. It is a starting point, not a finished submission. "
          "Use it for your own manuscript; do not reformat a paper that was sent to you to review.", "",
          "## What was converted", "",
          f"- Words read: {stats['words']}; sections: {stats['sections']}; references: {stats['references']}",

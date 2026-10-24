@@ -27,7 +27,12 @@
     <div class="meta">{{ kind_badge(f.kind) }} {{ state_badge(f.status) }} <span class="badge b-mute">{{ f.module }}</span>
       {% if sub_id %}<span class="spacer"></span><span class="fb" data-sub="{{ sub_id }}" data-finding="{{ f.id }}">
         <button class="chip" type="button" data-verdict="1" aria-pressed="{{ 'true' if fb and fb.get(f.id) == 1 else 'false' }}" title="This finding helped me">Useful</button>
-        <button class="chip" type="button" data-verdict="-1" aria-pressed="{{ 'true' if fb and fb.get(f.id) == -1 else 'false' }}" title="This finding was wrong or not useful">Not useful</button></span>{% endif %}</div>
+        <button class="chip" type="button" data-verdict="-1" aria-pressed="{{ 'true' if fb and fb.get(f.id) == -1 else 'false' }}" title="This finding was wrong or not useful">Not useful</button>
+        <select class="fb-reason" aria-label="Why was it not useful?"{% if not (fb and fb.get(f.id) == -1) %} hidden{% endif %}>
+          {% set cur = fb.get('r:' ~ f.id, '') if fb else '' %}
+          <option value="">Why? (optional)</option>
+          {% for k, label in [('wrong', 'It is wrong'), ('vague', 'Too vague'), ('known', 'Already known'), ('other', 'Other')] %}<option value="{{ k }}"{% if cur == k %} selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select></span>{% endif %}</div>
     <p>{{ f.text }}</p>
     {% for e in f.evidence[:2] %}
       <div class="quote">“{{ e.quote }}”

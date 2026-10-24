@@ -24,6 +24,7 @@ class Settings:
     online_checks: bool = _bool("ONLINE_CHECKS", True)
     ocr_enabled: bool = _bool("OCR_ENABLED", True)
     consensus_runs: int = int(os.getenv("LLM_CONSENSUS_RUNS", "1"))
+    self_verify: bool = _bool("LLM_SELF_VERIFY", False)
 
 
 settings = Settings()

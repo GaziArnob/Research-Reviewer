@@ -83,21 +83,26 @@
 
   // Useful / not useful votes on findings.
   document.querySelectorAll(".fb").forEach(function (box) {
+    var reason = box.querySelector(".fb-reason");
+    function send(verdict, why, done) {
+      fetch("/app/papers/" + box.getAttribute("data-sub") + "/feedback", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+        body: JSON.stringify({ finding_id: box.getAttribute("data-finding"), verdict: verdict, reason: why || null })
+      }).then(function (r) { if (r.ok && done) done(); });
+    }
     box.querySelectorAll("button").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var verdict = parseInt(btn.getAttribute("data-verdict"), 10);
         var on = btn.getAttribute("aria-pressed") === "true";
-        fetch("/app/papers/" + box.getAttribute("data-sub") + "/feedback", {
-          method: "POST", credentials: "same-origin",
-          headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
-          body: JSON.stringify({ finding_id: box.getAttribute("data-finding"), verdict: on ? 0 : verdict })
-        }).then(function (r) {
-          if (!r.ok) return;
+        send(on ? 0 : verdict, "", function () {
           box.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
           if (!on) btn.setAttribute("aria-pressed", "true");
+          if (reason) { reason.value = ""; reason.hidden = on || verdict !== -1; }
         });
       });
     });
+    if (reason) reason.addEventListener("change", function () { send(-1, reason.value); });
   });
 
   // Confirm destructive actions.

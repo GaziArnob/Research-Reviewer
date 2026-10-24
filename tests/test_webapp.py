@@ -249,7 +249,7 @@ def test_convert_page_and_download(client):
     r = client.post("/app/convert", data={"csrf": csrf, "template": "nope"}, files=files)
     assert r.status_code == 303 and "Choose a template" in client.get("/app/convert").text
     bad = client.post("/app/convert", data={"csrf": csrf, "template": "icml2025"}, files={"file": ("x.pdf", b"nope", "application/pdf")})
-    assert bad.status_code == 303 and "not a PDF" in client.get("/app/convert").text
+    assert bad.status_code == 303 and "Upload a PDF" in client.get("/app/convert").text
     with db.session() as s:
         assert s.query(db.Event).filter_by(action="paper_converted").count() == 1
 
@@ -273,6 +273,9 @@ def test_feedback_votes_and_annotated_pdf(client):
     assert vote({"finding_id": fid, "verdict": -1}).status_code == 200  # changing the vote does not add a row
     assert vote({"finding_id": "nope", "verdict": 1}).status_code == 400
     assert vote({"finding_id": fid, "verdict": 5}).status_code == 400
+    assert vote({"finding_id": fid, "verdict": -1, "reason": "bogus"}).status_code == 400
+    assert vote({"finding_id": fid, "verdict": -1, "reason": "vague"}).status_code == 200
+    assert 'value="vague" selected' in client.get(f"/app/papers/{pid}/findings").text
     assert client.post(f"/app/papers/{pid}/feedback", content="{}", headers={"Content-Type": "application/json"}).status_code == 403
     with db.session() as s:
         rows = s.query(db.Feedback).all()
@@ -283,7 +286,10 @@ def test_feedback_votes_and_annotated_pdf(client):
         assert s.query(db.Feedback).count() == 0
     vote({"finding_id": fid, "verdict": 1})
     admin = client.get("/app/admin").text
-    assert "How useful are the checks" in admin and findings[0]["module"] in admin
+    assert "How useful are the checks" in admin and findings[0]["module"] in admin and "95% range" in admin
+    csv_text = client.get("/app/admin/feedback.csv")
+    assert csv_text.status_code == 200 and csv_text.text.splitlines()[0] == "module,kind,verdict,reason,date"
+    assert len(csv_text.text.splitlines()) == 2 and "@" not in csv_text.text
 
     csrf = token(client, "/app")
     ok = client.post(f"/app/papers/{pid}/annotate", data={"csrf": csrf}, files={"file": ("p.pdf", pdf, "application/pdf")})

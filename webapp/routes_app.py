@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from core.annotate import annotate_pdf
 from core.assistant.agent import answer_question
 from core.ingest.loader import sha256_of
-from core.convert.bundle import ConversionError, convert_pdf
+from core.convert.bundle import SOURCE_SUFFIXES, ConversionError, convert_pdf, convert_source
 from core.convert.templates import list_paper_templates
 from core.ingest.loader import _ARXIV_ID
 from core.llm.router import get_llm
@@ -154,8 +154,10 @@ def findings(request: Request, sub_id: int, user: User = Depends(require_user), 
     res = ctx["res"]
     order = {"major": 0, "minor": 1, "question": 2, "strength": 3, "flag": 4}
     items = sorted(res.findings, key=lambda f: (order.get(f.kind, 9), f.module)) if res else []
-    fb = {r.finding_id: r.verdict for r in s.scalars(
-        select(Feedback).where(Feedback.user_id == user.id, Feedback.submission_id == sub_id))}
+    fb = {}
+    for r in s.scalars(select(Feedback).where(Feedback.user_id == user.id, Feedback.submission_id == sub_id)):
+        fb[r.finding_id] = r.verdict
+        fb["r:" + r.finding_id] = r.reason or ""
     ctx.update(items=items, kinds=sorted({f.kind for f in items}, key=lambda k: order.get(k, 9)),
                states=sorted({f.status for f in items}), fb=fb)
     return render(request, "paper_findings.html", **ctx)
@@ -170,6 +172,9 @@ async def feedback(request: Request, sub_id: int, user: User = Depends(require_u
     verdict = body.get("verdict")
     if finding is None or verdict not in (1, -1, 0):
         raise HTTPException(400, "Unknown finding or verdict")
+    reason = body.get("reason") if verdict == -1 else None
+    if reason not in (None, "wrong", "vague", "known", "other"):
+        raise HTTPException(400, "Unknown reason")
     row = s.scalar(select(Feedback).where(Feedback.user_id == user.id, Feedback.submission_id == sub_id,
                                           Feedback.finding_id == finding.id))
     if verdict == 0:
@@ -177,9 +182,10 @@ async def feedback(request: Request, sub_id: int, user: User = Depends(require_u
             s.delete(row)
     elif row:
         row.verdict = verdict
+        row.reason = reason
     else:
         s.add(Feedback(user_id=user.id, submission_id=sub_id, finding_id=finding.id, module=finding.module,
-                       kind=finding.kind, verdict=verdict))
+                       kind=finding.kind, verdict=verdict, reason=reason))
     return {"ok": True}
 
 
@@ -369,7 +375,7 @@ def convert_page(request: Request, user: User = Depends(require_user)):
 
 @router.post("/convert", dependencies=[Depends(csrf_protect)])
 async def convert_submit(request: Request, file: UploadFile = File(None), template: str = Form(""), anonymize: str = Form("default"),
-                         docx: str = Form(""), user: User = Depends(require_user), s: Session = Depends(get_db)):
+                         docx: str = Form(""), tables: str = Form(""), user: User = Depends(require_user), s: Session = Depends(get_db)):
     """The PDF is converted in memory and never stored; the answer is a ZIP (LaTeX, images, Word, report)."""
     def back(msg: str):
         flash(request, "bad", msg)
@@ -378,15 +384,19 @@ async def convert_submit(request: Request, file: UploadFile = File(None), templa
     if template not in [t.id for t in list_paper_templates()]:
         return back("Choose a template.")
     if file is None or not file.filename:
-        return back("Choose a PDF file.")
+        return back("Choose a file.")
     data = await file.read(web.max_upload_mb * 1024 * 1024 + 1)
     if len(data) > web.max_upload_mb * 1024 * 1024:
         return back(f"The file is larger than {web.max_upload_mb} MB.")
-    if not data.startswith(b"%PDF"):
-        return back("That is not a PDF file.")
+    is_pdf = data.startswith(b"%PDF")
+    if not is_pdf and not file.filename.lower().endswith(SOURCE_SUFFIXES):
+        return back("Upload a PDF, a .tex file, a .zip of the LaTeX project, or a .docx file.")
     anon = {"yes": True, "no": False}.get(anonymize)  # anything else = the venue's default
     try:
-        result = convert_pdf(data, file.filename, template, anonymous=anon, with_docx=docx == "1")
+        if is_pdf:
+            result = convert_pdf(data, file.filename, template, anonymous=anon, with_docx=docx == "1", tables=tables == "1")
+        else:
+            result = convert_source(data, file.filename, template, anonymous=anon, with_docx=docx == "1")
     except ConversionError as exc:
         return back(str(exc))
     log_event(s, user.id, "paper_converted", None, {"template": template, "anonymous": result.stats["anonymous"]})

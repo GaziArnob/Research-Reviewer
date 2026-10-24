@@ -76,6 +76,7 @@ class Feedback(WBase):
     module: Mapped[str] = mapped_column(String(40))
     kind: Mapped[str] = mapped_column(String(20))
     verdict: Mapped[int] = mapped_column(Integer)  # 1 useful, -1 not useful
+    reason: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # why not useful: wrong, vague, known, other
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -97,7 +98,16 @@ def configure(url: Optional[str] = None, engine: Optional[Engine] = None) -> Eng
     _engine = engine
     _Session = sessionmaker(engine, expire_on_commit=False)
     WBase.metadata.create_all(engine)
+    _add_missing_columns(engine)
     return engine
+
+
+def _add_missing_columns(engine: Engine) -> None:
+    """create_all never alters existing tables; add columns introduced after a database was first created."""
+    from sqlalchemy import inspect, text
+    if "reason" not in {c["name"] for c in inspect(engine).get_columns("web_feedback")}:
+        with engine.begin() as c:
+            c.execute(text("ALTER TABLE web_feedback ADD COLUMN reason VARCHAR(20)"))
 
 
 def engine() -> Engine:

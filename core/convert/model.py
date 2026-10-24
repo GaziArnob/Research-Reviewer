@@ -4,12 +4,13 @@ from typing import Optional
 
 @dataclass
 class Block:
-    kind: str  # para | bullets | figure | table
+    kind: str  # para | bullets | figure | table | equation (equation and table keep `raw` LaTeX when read from source)
     text: str = ""  # paragraph text
     items: list[str] = field(default_factory=list)  # bullet items
     num: Optional[int] = None  # figure/table number
     caption: str = ""
     image: Optional[str] = None  # file name inside images/ when a raster image was matched
+    raw: str = ""  # verbatim LaTeX (tabular or equation environment) from a LaTeX source
 
 
 @dataclass

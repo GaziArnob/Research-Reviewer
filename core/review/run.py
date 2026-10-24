@@ -12,6 +12,7 @@ from core.review.agents import run_critic, run_reviewer
 from core.review.consensus import merge_runs
 from core.review.checklist import run_checklist
 from core.review.scoring import calibrate, draft_scores
+from core.review.selfcheck import self_verify
 from core.storage.cache import Cache, make_key
 
 
@@ -66,6 +67,15 @@ def run_llm_review(paper: ParsedPaper, llm: LLMClient, cache: Cache, result: Pip
     k = cached("llm_critic", critic_stage, lambda v: v["answered"])
     critic_findings = [Finding(**x) for x in k["f"]]
     all_review = review_findings + critic_findings
+    if settings.self_verify:  # one short question per comment; doubted ones are marked uncertain, not deleted
+        def selfcheck_stage() -> dict:
+            checked, counts = self_verify(all_review, llm)
+            return {"f": [f.model_dump() for f in checked], "counts": counts}
+
+        sc = cached("llm_selfcheck_" + hashlib.sha1("|".join(f.id for f in all_review).encode()).hexdigest()[:10], selfcheck_stage,
+                    lambda v: sum(v["counts"].values()) > v["counts"]["unknown"])
+        all_review = [Finding(**x) for x in sc["f"]]
+        result.stats["self_check"] = sc["counts"]
 
     related_key = hashlib.sha1("|".join(sorted(p.title for p in result.related)).encode()).hexdigest()[:10]
 

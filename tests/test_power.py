@@ -150,3 +150,59 @@ def test_overlap_critique_filter_drops_summary_sentences(tmp_path):
         "However, the experiments only use one small dataset and lack any ablation study."]}))
     assert len(human_sentences("p", tmp_path)) == 2
     assert len(human_sentences("p", tmp_path, critique_only=True)) == 1
+
+
+def test_wilson_interval_is_wide_for_few_votes():
+    from core.stats import wilson
+    lo, hi = wilson(3, 3)
+    assert lo < 0.5 and hi == 1.0           # 3 of 3 says little
+    lo, hi = wilson(300, 300)
+    assert lo > 0.98
+    assert wilson(0, 0) == (0.0, 1.0)
+
+
+def test_selfcheck_marks_doubted_comments_uncertain_but_keeps_them():
+    from core.llm.base import LLMResult
+    from core.review.selfcheck import self_verify
+
+    class Fake:
+        name = "fake"
+
+        def complete(self, system, user, **kw):
+            return LLMResult(text='{"supports": "no"}' if "BAD" in user else '{"supports": "yes"}', model="m")
+
+    ev = [Evidence(quote="some quote from the paper text here")]
+    good = Finding(module="review", kind="minor", text="fine comment", evidence=ev, source="llm")
+    bad = Finding(module="review", kind="minor", text="BAD comment", evidence=ev, source="llm")
+    rule = Finding(module="writing", kind="minor", text="rule finding", evidence=ev)
+    out, counts = self_verify([good, bad, rule], Fake())
+    assert [f.status for f in out] == ["needs_verification", "uncertain", "needs_verification"]
+    assert counts == {"yes": 1, "partly": 0, "no": 1, "unknown": 1} and "doubted" in out[1].text
+
+
+def test_gold_scoring_counts_precision_and_missed(tmp_path):
+    import csv
+    from eval.gold import FIELDS, score
+    f = tmp_path / "l.csv"
+    with f.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, FIELDS)
+        w.writeheader()
+        for mod, label in [("review", "ok"), ("review", "wrong"), ("review", "ok"), ("writing", "weak"), ("MISSED", "")]:
+            w.writerow({"paper_id": "p", "finding_id": "x", "module": mod, "kind": "minor", "text": "t", "quote": "", "page": "", "label": label})
+    out = score(f)
+    assert "| review | 3 | 2 |" in out and "| writing | 1 | 0 |" in out and "missed (rows marked MISSED): 1" in out
+
+
+def test_table_rebuild_from_word_positions():
+    import pymupdf
+    from core.convert.tables import recover_tables
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((72, 80), "Table 2: Results on two datasets.", fontsize=10)
+    rows = [("Model", "Dataset A", "Dataset B"), ("Baseline", "71.2", "64.0"), ("Ours", "75.8", "69.9")]
+    for r, row in enumerate(rows):
+        for c, cell in enumerate(row):
+            page.insert_text((72 + c * 120, 110 + r * 16), cell, fontsize=10)
+    page.insert_text((72, 200), "Some ordinary sentence after the table that is not part of it at all.", fontsize=10)
+    grid = recover_tables(doc.tobytes())[2]
+    assert grid == [list(r) for r in rows]

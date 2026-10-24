@@ -58,7 +58,7 @@ def render_docx(doc: Doc, tpl: PaperTemplate, anonymous: bool) -> bytes:
     for s in doc.sections:
         d.add_heading(s.heading, level=min(s.level, 3))
         for b in s.blocks:
-            if b.kind == "para":
+            if b.kind in ("para", "equation"):
                 d.add_paragraph(b.text)
             elif b.kind == "bullets":
                 for it in b.items:

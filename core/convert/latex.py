@@ -101,6 +101,8 @@ def _block(b: Block, valid: set[int], stat: dict) -> list[str]:
             stat["citations"] += n
             items.append(f"  \\item {s}")
         return ["\\begin{itemize}"] + items + ["\\end{itemize}", ""]
+    if b.kind == "equation":
+        return [b.raw, ""]
     cap, n = text_with_cites(b.caption, valid)
     stat["citations"] += n
     env = "figure" if b.kind == "figure" else "table"
@@ -108,6 +110,8 @@ def _block(b: Block, valid: set[int], stat: dict) -> list[str]:
     if b.kind == "figure" and b.image:
         body = [f"  \\includegraphics[width=\\linewidth]{{images/{b.image}}}  % matched automatically: check it is the right figure"]
         stat["figures_with_image"] += 1
+    elif b.kind == "table" and b.raw:
+        body = ["  " + b.raw.replace("\n", "\n  ")]
     else:
         what = "figure" if b.kind == "figure" else "table"
         body = [f"  \\fbox{{\\parbox{{0.9\\linewidth}}{{\\centering TODO: insert {what} {b.num or ''}}}}}  % not recovered from the PDF"]

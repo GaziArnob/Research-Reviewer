@@ -12,8 +12,8 @@
     <h2>1. Your manuscript</h2>
     <form method="post" action="/app/convert" enctype="multipart/form-data">
       {{ csrf_input() }}
-      <div class="field"><label for="file">PDF file</label><input id="file" name="file" type="file" accept="application/pdf,.pdf" required>
-        <div class="hint">Up to {{ max_mb }} MB. Processed in memory and never stored.</div></div>
+      <div class="field"><label for="file">Manuscript file</label><input id="file" name="file" type="file" accept="application/pdf,.pdf,.tex,.zip,.docx" required>
+        <div class="hint">A LaTeX source (.tex, or a .zip of the project with .bib and images) or a Word file (.docx) converts far more reliably than a PDF. Up to {{ max_mb }} MB. Processed in memory and never stored.</div></div>
       <div class="field"><label for="template">Target template</label>
         <select id="template" name="template" required>
           <option value="" disabled selected>Choose a venue</option>
@@ -25,6 +25,7 @@
         <select id="anonymize" name="anonymize"><option value="default">Venue default (double-blind venues are anonymized)</option>
           <option value="yes">Anonymize (remove names, acknowledgements)</option><option value="no">Keep author names</option></select></div>
       <div class="field"><label class="check"><input type="checkbox" name="docx" value="1" checked><span>Also make a Word file <span class="muted small">(plain layout, not the venue's own Word template)</span></span></label></div>
+      <div class="field"><label class="check"><input type="checkbox" name="tables" value="1"><span>Try to rebuild tables from a PDF <span class="muted small">(experimental: about 3 in 10 tables are recovered, most of those need small fixes)</span></span></label></div>
       <button class="btn btn-primary btn-lg" type="submit">{{ icon('download') }}Convert and download ZIP</button>
     </form>
   </div>
@@ -37,8 +38,9 @@
     </ul>
     <h3>What it cannot do</h3>
     <ul class="muted">
-      <li>Equations, table contents and vector figures are not recovered from a PDF: you get placeholders or plain text.</li>
-      <li>Text after the reference list (appendices) is not converted.</li>
+      <li>From a PDF, equations, table contents and vector figures are not recovered: you get placeholders or plain text. From LaTeX source, equations and tables are copied as they are.</li>
+      <li>From a PDF, text after the reference list (appendices) is not converted.</li>
+      <li>From a Word file, tables and pictures are not copied, and section titles must use Word's Heading styles.</li>
       <li>The LaTeX is not compiled here, and each venue's style file must be downloaded from the venue.</li>
       <li>Page limits are only estimated. Check the PDF you compile.</li>
     </ul>
