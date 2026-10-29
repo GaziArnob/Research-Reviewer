@@ -135,3 +135,11 @@ details > summary { cursor: pointer; font-weight: 600; } details[open] > summary
 .ai-text { line-height: 1.8; }
 .ai-low { background: var(--bad-soft); border-bottom: 2px solid var(--bad); border-radius: 3px; }
 .ai-mid { background: var(--warn-soft); border-bottom: 2px solid var(--warn); border-radius: 3px; }
+
+/* brand logo: the sidebar is always dark; the public top bar follows the theme */
+.logo-wide { height: 40px; width: auto; display: block; }
+.side .brand { padding-bottom: 1rem; } .side .logo-wide { height: 36px; }
+.logo-on-dark { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-on-light { display: none; } :root:not([data-theme="light"]) .logo-on-dark { display: block; } }
+:root[data-theme="dark"] .logo-on-light { display: none; } :root[data-theme="dark"] .logo-on-dark { display: block; }
+@media (max-width: 560px) { .logo-wide { height: 32px; } }

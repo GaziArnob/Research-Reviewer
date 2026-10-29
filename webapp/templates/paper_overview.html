@@ -27,12 +27,8 @@
   {% else %}<p class="muted mb0">No major issue was found by the checks. That does not mean the paper has none: the checks cover structure, references, statistics and reproducibility keywords, and a small model's comments.</p>{% endif %}
 </div>
 
-<div class="grid grid-2">
-  <div class="card"><h3>{{ icon('clipboard') }} Next step</h3><p class="muted">Open the review form for your venue, check the prepared evidence, and write the review in your own words.</p>
-    <a class="btn btn-primary" href="/app/papers/{{ sub.id }}/form">Open review form</a></div>
-  <div class="card"><h3>{{ icon('chat') }} Something unclear?</h3><p class="muted">Ask the paper a question and see the passages the answer comes from.</p>
-    <a class="btn" href="/app/papers/{{ sub.id }}/ask">Ask the paper</a></div>
-</div>
+<div class="row mb"><a class="btn btn-primary" href="/app/papers/{{ sub.id }}/form">{{ icon('clipboard') }}Open the review form</a>
+  <a class="btn" href="/app/papers/{{ sub.id }}/ask">{{ icon('chat') }}Ask the paper a question</a></div>
 
 {% if res.completeness and res.completeness.items %}
 {% set c = res.completeness %}

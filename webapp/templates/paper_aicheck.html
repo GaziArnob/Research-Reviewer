@@ -2,7 +2,7 @@
 {% from "_macros.html" import icon, alert %}
 {% block tab %}
 {% if report %}
-  {{ alert('warn', 'This is a hint, not an AI detector you can rely on. It cannot tell who wrote a text. Detectors like this often wrongly flag human authors, especially people writing in a second language, and edited or paraphrased machine text passes unnoticed. Never use it alone to judge authors.') }}
+  {{ alert('warn', 'A weak hint, not proof. It often flags human writers wrongly and misses edited AI text. Never use it alone to judge anyone.') }}
   {% include "_aireport.html" %}
   {% if report.per_section %}
   <div class="card"><h3>Word-list measure by section</h3>

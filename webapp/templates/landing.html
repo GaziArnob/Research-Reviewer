@@ -2,33 +2,71 @@
 {% block title %}{{ tagline }}{% endblock %}
 {% block content %}
 <section class="hero"><div class="wrap">
-  <span class="badge b-brand">Early access</span>
-  <h1>Review faster. Trace every comment to the paper.</h1>
-  <p class="lead">{{ brand }} reads a manuscript, runs transparent checks, drafts evidence-linked notes with verified quotes, and prepares the review form for your venue. You make the judgement and write the review.</p>
-  <div class="row">
+  <span class="chip-link rise d1">Early access <strong>Evidence-first reviewing</strong></span>
+  <h1 aria-label="Review faster. Trace every comment to the paper.">
+    <span class="l1" aria-hidden="true"><span class="w d2">Review</span> <span class="w d3">faster.</span></span>
+    <span class="l2" aria-hidden="true"><span class="w d4">Trace</span> <span class="w d5">every</span> <span class="w d6">comment</span> <span class="w d7">to</span> <span class="w d8">the</span> <span class="w d8">paper.</span></span>
+  </h1>
+  <p class="lead rise d8">{{ brand }} reads a manuscript, runs transparent checks, drafts evidence-linked notes with verified quotes, and prepares the review form for your venue. You make the judgement and write the review.</p>
+  <div class="row rise d9">
+    <span class="cta">
     {% if user %}<a class="btn btn-primary btn-lg" href="/app/new">Review a paper</a>
-    {% elif allow_signup %}<a class="btn btn-primary btn-lg" href="/signup">Create a free account</a><a class="btn btn-lg" href="/login">Sign in</a>
-    {% else %}<a class="btn btn-primary btn-lg" href="/login">Sign in</a>{% endif %}
+    {% elif allow_signup %}<a class="btn btn-primary btn-lg" href="/signup">Create a free account</a>{% else %}<a class="btn btn-primary btn-lg" href="/login">Sign in</a>{% endif %}
+    </span>
+    {% if not user and allow_signup %}<a class="btn btn-lg" href="/login">Sign in</a>{% endif %}
   </div>
-  <p class="muted small">Runs on your own machine or server. No scores are shown by default.</p>
+  <p class="muted small rise d9">Runs on your own machine or server. No scores are shown by default.</p>
+</div>
+
+<div class="stage">
+  <svg class="flow left" viewBox="0 0 400 260" aria-hidden="true" focusable="false">
+    <defs><linearGradient id="fg" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#d946ef"/></linearGradient>
+    <linearGradient id="fg2" x1="0" x2="1"><stop offset="0" stop-color="#fb7185" stop-opacity="0"/><stop offset=".5" stop-color="#d946ef"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+    <path class="base" d="M0 60 C 120 60, 150 150, 400 150"/><path class="base" d="M0 200 C 140 200, 170 130, 400 130"/>
+    <path class="run" d="M0 60 C 120 60, 150 150, 400 150"/><path class="run two" d="M0 200 C 140 200, 170 130, 400 130"/>
+  </svg>
+  <svg class="flow right" viewBox="0 0 400 260" aria-hidden="true" focusable="false">
+    <path class="base" d="M0 60 C 120 60, 150 150, 400 150"/><path class="base" d="M0 200 C 140 200, 170 130, 400 130"/>
+    <path class="run" d="M0 60 C 120 60, 150 150, 400 150"/><path class="run two" d="M0 200 C 140 200, 170 130, 400 130"/>
+  </svg>
+  <div class="window" id="product" aria-hidden="true">
+    <div class="bar"><i></i><i></i><i></i><span>Paper · Findings</span></div>
+    <div class="body">
+      <div class="rail"><b>Overview</b><b class="on">Findings</b><b>Claims &amp; evidence</b><b>Literature</b><b>AI check</b><b>Review form</b></div>
+      <div class="main2"><h4>Findings</h4>
+        <div class="row2"><span class="b maj">Major</span>The main claim is tested on one dataset only.<em>“We evaluate on a single benchmark.” · page 6</em></div>
+        <div class="row2"><span class="b min">Minor</span>No variance or error bars are reported.<em>“Results are averaged.” · page 7</em></div>
+        <div class="row2"><span class="b qst">Question</span>How were the hyperparameters chosen?<em>“We use the default settings.” · page 5</em></div>
+      </div>
+      <div class="side2"><h4>Reporting checklist</h4><span>11 of 15 items found</span><div class="meter"><i class="m73"></i></div>
+        <span>References verified</span><div class="meter"><i class="m90"></i></div><span>Related work covered</span><div class="meter"><i class="m40"></i></div></div>
+    </div>
+  </div>
 </div></section>
 
+<div class="marquee" aria-label="Review form layouts available"><div class="track" aria-hidden="true">
+  <span>NeurIPS</span><span>ICML</span><span>ACL Rolling Review</span><span>ICLR</span><span>CVPR</span><span>AAAI</span><span>IEEE</span>
+  <span>NeurIPS</span><span>ICML</span><span>ACL Rolling Review</span><span>ICLR</span><span>CVPR</span><span>AAAI</span><span>IEEE</span>
+  <span>NeurIPS</span><span>ICML</span><span>ACL Rolling Review</span><span>ICLR</span><span>CVPR</span><span>AAAI</span><span>IEEE</span>
+  <span>NeurIPS</span><span>ICML</span><span>ACL Rolling Review</span><span>ICLR</span><span>CVPR</span><span>AAAI</span><span>IEEE</span>
+</div></div>
+
 <section class="section" id="features"><div class="wrap">
-  <h2>What you get for each paper</h2>
+  <h2 class="reveal">What you get <span class="dim">for each paper</span></h2>
   <p class="sub">Every finding says where it came from and how sure the tool is, so you can check it in seconds instead of rereading the whole paper.</p>
   <div class="grid grid-3">
-    <div class="feature"><div class="ic">{% from "_macros.html" import icon %}{{ icon('check') }}</div><h3>Evidence-linked comments</h3><p class="muted">Strengths, weaknesses and questions come with a quote and page. A comment whose quote is not in the paper is removed automatically.</p></div>
-    <div class="feature"><div class="ic">{{ icon('search') }}</div><h3>Reference and citation checks</h3><p class="muted">DOIs and titles are checked against Crossref, in-text citations are matched to the list, and retractions are flagged where the data exists.</p></div>
-    <div class="feature"><div class="ic">{{ icon('book') }}</div><h3>Related-work comparison</h3><p class="muted">Finds similar papers and highlights possible overlap or missing citations, each backed by a quote from the other paper's abstract.</p></div>
-    <div class="feature"><div class="ic">{{ icon('clipboard') }}</div><h3>Reproducibility and statistics hints</h3><p class="muted">Keyword checks for code, data, seeds, compute, variance and significance tests, plus the AAAI reproducibility checklist.</p></div>
-    <div class="feature"><div class="ic">{{ icon('file') }}</div><h3>Venue-ready forms</h3><p class="muted">NeurIPS, ICML, ACL Rolling Review, ICLR, CVPR, AAAI and IEEE layouts, exported to Markdown or Word. Ratings are always left for you.</p></div>
-    <div class="feature"><div class="ic">{{ icon('chat') }}</div><h3>Ask the paper</h3><p class="muted">Ask a question and get an answer with the passages it came from, and warnings when a number is not in the cited text.</p></div>
+    <div class="feature reveal"><div class="ic">{% from "_macros.html" import icon %}{{ icon('check') }}</div><h3>Evidence-linked comments</h3><p class="muted">Strengths, weaknesses and questions come with a quote and page. A comment whose quote is not in the paper is removed automatically.</p></div>
+    <div class="feature reveal"><div class="ic">{{ icon('search') }}</div><h3>Reference and citation checks</h3><p class="muted">DOIs and titles are checked against Crossref, in-text citations are matched to the list, and retractions are flagged where the data exists.</p></div>
+    <div class="feature reveal"><div class="ic">{{ icon('book') }}</div><h3>Related-work comparison</h3><p class="muted">Finds similar papers and highlights possible overlap or missing citations, each backed by a quote from the other paper's abstract.</p></div>
+    <div class="feature reveal"><div class="ic">{{ icon('clipboard') }}</div><h3>Reproducibility and statistics hints</h3><p class="muted">Keyword checks for code, data, seeds, compute, variance and significance tests, plus the AAAI reproducibility checklist.</p></div>
+    <div class="feature reveal"><div class="ic">{{ icon('file') }}</div><h3>Venue-ready forms</h3><p class="muted">NeurIPS, ICML, ACL Rolling Review, ICLR, CVPR, AAAI and IEEE layouts, exported to Markdown or Word. Ratings are always left for you.</p></div>
+    <div class="feature reveal"><div class="ic">{{ icon('chat') }}</div><h3>Ask the paper</h3><p class="muted">Ask a question and get an answer with the passages it came from, and warnings when a number is not in the cited text.</p></div>
   </div>
 </div></section>
 
 <section class="section alt" id="how"><div class="wrap">
-  <h2>How it works</h2><p class="sub">Three steps. Most of the time goes into the optional language-model pass.</p>
-  <div class="grid grid-3">
+  <h2 class="reveal">How it works</h2><p class="sub">Three steps. Most of the time goes into the optional language-model pass.</p>
+  <div class="grid grid-3 steps reveal">
     <div class="step"><div class="num">1</div><div><h3>Upload</h3><p class="muted">Add PDFs or arXiv ids. Scanned PDFs are read with OCR.</p></div></div>
     <div class="step"><div class="num">2</div><div><h3>Review the evidence</h3><p class="muted">Open the findings, the claims and the related work. Filter by severity or by how certain each item is.</p></div></div>
     <div class="step"><div class="num">3</div><div><h3>Write and export</h3><p class="muted">Pick the venue, copy the prepared evidence into your own words, and export the form.</p></div></div>
@@ -36,14 +74,21 @@
 </div></section>
 
 <section class="section"><div class="wrap">
-  <h2>Built for responsible reviewing</h2>
+  <h2 class="reveal">Built for <span class="dim">responsible reviewing</span></h2>
   <p class="sub">Reviewing is a confidential duty and venues have rules about AI. The product is designed around that.</p>
   <div class="grid grid-2">
-    <div class="card"><h3>{{ icon('shield') }} Venue AI rules are enforced</h3><p class="muted">ICML, ACL Rolling Review, CVPR and IEEE forbid AI-written review text. For those venues the form hides everything a language model wrote and keeps only rule-based checks and verified quotes.</p></div>
-    <div class="card"><h3>{{ icon('lock') }} Private by default</h3><p class="muted">The PDF is deleted after processing. The language model runs locally. Online checks send only the title, one abstract sentence and reference titles, and can be turned off.</p></div>
-    <div class="card"><h3>{{ icon('alert') }} No scores unless you ask</h3><p class="muted">On a 20-paper benchmark, the local model's scores did not track human reviewers, so ratings and recommendations are never filled in for you.</p></div>
-    <div class="card"><h3>{{ icon('user') }} A human approves</h3><p class="muted">Nothing is final until a named reviewer signs off, and every action is written to an audit trail.</p></div>
+    <div class="card glow reveal"><h3>{{ icon('shield') }} Venue AI rules are enforced</h3><p class="muted">ICML, ACL Rolling Review, CVPR and IEEE forbid AI-written review text. For those venues the form hides everything a language model wrote and keeps only rule-based checks and verified quotes.</p></div>
+    <div class="card glow reveal"><h3>{{ icon('lock') }} Private by default</h3><p class="muted">The PDF is deleted after processing. The language model runs locally. Online checks send only the title, one abstract sentence and reference titles, and can be turned off.</p></div>
+    <div class="card glow reveal"><h3>{{ icon('alert') }} No scores unless you ask</h3><p class="muted">On a 20-paper benchmark, the local model's scores did not track human reviewers, so ratings and recommendations are never filled in for you.</p></div>
+    <div class="card glow reveal"><h3>{{ icon('user') }} A human approves</h3><p class="muted">Nothing is final until a named reviewer signs off, and every action is written to an audit trail.</p></div>
   </div>
   <p class="muted small">Read the limits we state openly on the <a href="/trust">Trust &amp; privacy</a> page.</p>
 </div></section>
+<section class="section"><div class="wrap"><div class="cta-band reveal">
+  <h2>Review your next paper <span class="dim">with the evidence in front of you</span></h2>
+  <p>Upload a PDF, read the findings with their quotes, and write the review in your own words.</p>
+  <div class="row">{% if user %}<a class="btn btn-primary btn-lg" href="/app/new">Review a paper</a>
+    {% elif allow_signup %}<a class="btn btn-primary btn-lg" href="/signup">Create a free account</a><a class="btn btn-lg" href="/ai-check">Try the AI check</a>
+    {% else %}<a class="btn btn-primary btn-lg" href="/login">Sign in</a>{% endif %}</div>
+</div></div></section>
 {% endblock %}

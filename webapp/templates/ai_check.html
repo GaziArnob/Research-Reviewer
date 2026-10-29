@@ -1,21 +1,27 @@
-{% extends "base_public.html" %}
+{# Signed-in users get the app layout (sidebar); visitors get the public layout. #}
+{% extends "base_app.html" if user else "base_public.html" %}
 {% from "_macros.html" import alert, csrf_input with context %}
 {% block title %}AI text check{% endblock %}
 {% block content %}
+{% if user %}
+<div class="page-head"><div><h1>AI text check</h1>
+  <p class="muted">Paste any English text (150 words or more) to see how predictable each sentence is to a small language model.</p></div></div>
+{% else %}
 <div class="wrap"><div class="prose">
   <h1>AI text check</h1>
-  <p class="muted">Paste any English text (at least 150 words; more is more reliable) and see how predictable its sentences are to a small language model, sentence by sentence. No account is needed. The text is analysed in memory and is never stored or logged.</p>
-  {{ alert('warn', 'This is a weak hint, not proof. It cannot tell who wrote a text. Style-based detection often wrongly flags human writers, especially people writing in a second language, and edited AI text passes unnoticed. Never use it alone to accuse anyone.') }}
+  <p class="muted">Paste any English text (150 words or more) to see how predictable each sentence is to a small language model. No account needed; nothing is stored.</p>
+{% endif %}
+  {{ alert('warn', 'A weak hint, not proof. It often flags human writers wrongly and misses edited AI text. Never use it alone to accuse anyone.') }}
   {% if error %}{{ alert('bad', error) }}{% endif %}
 
-  <form method="post" action="/ai-check">
+  <form method="post" action="/ai-check" class="{{ 'card' if user }}">
     {{ csrf_input() }}
     <div class="field"><label for="text">Text to check</label>
       <textarea id="text" name="text" rows="14" required>{{ text }}</textarea>
-      <div class="hint">Up to about 9,000 words. Put in the body text only, without the reference list.</div></div>
+      <div class="hint">Up to about 9,000 words. Body text only, without the reference list. Nothing is stored.</div></div>
     <button class="btn btn-primary btn-lg" type="submit">Check the text</button>
   </form>
 
   {% if report %}{% include "_aireport.html" %}{% endif %}
-</div></div>
+{% if not user %}</div></div>{% endif %}
 {% endblock %}

@@ -160,4 +160,4 @@ def logout(request: Request):
 
 @router.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return RedirectResponse("/static/logo.svg", status_code=301)
+    return RedirectResponse("/static/favicon.png", status_code=301)

@@ -40,7 +40,7 @@ templates.env.filters["ago"] = _ago
 def _asset_version() -> str:
     """Changes whenever the CSS or JS file changes, so browsers never keep a stale copy after an update."""
     static = TEMPLATE_DIR.parent / "static"
-    return str(int(max((f.stat().st_mtime for f in (static / "css" / "app.css", static / "js" / "app.js") if f.exists()), default=0)))
+    return str(int(max((f.stat().st_mtime for f in [static / "css" / "app.css", static / "css" / "site.css", static / "js" / "app.js", static / "js" / "boot.js", *(static / "brand").glob("*.png")] if f.exists()), default=0)))
 
 
 templates.env.globals.update(brand=web.brand, tagline=web.tagline, plans=PLANS, plan_of=plan_of, asset_v=_asset_version)

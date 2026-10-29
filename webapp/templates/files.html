@@ -3,37 +3,22 @@
 {% block title %}File converter{% endblock %}
 {% block content %}
 <div class="page-head"><div><h1>File converter</h1>
-  <p class="muted">Convert between PDF, Word, images and text. Files are converted on the server in memory, returned at once and never stored.</p></div></div>
-{{ alert('warn', 'Quality varies: PDF to Word keeps the layout only approximately, and OCR (reading text from pictures) can make mistakes. Always check the result. Do not convert a manuscript that was sent to you for review anywhere you do not control.') }}
+  <p class="muted">PDF, Word, images and text. Files are converted in memory and never stored.</p></div></div>
 
-<div class="grid grid-2">
-  <div class="card">
-    <h2>Convert</h2>
+<div class="card">
     <form method="post" action="/app/files" enctype="multipart/form-data">
       {{ csrf_input() }}
+      <div class="form-grid">
       <div class="field"><label for="kind">What do you want to do?</label>
         <select id="kind" name="kind" required>
           {% for key, c in conversions.items() %}<option value="{{ key }}">{{ c[0] }}</option>{% endfor %}
         </select></div>
       <div class="field"><label for="files">File(s)</label>
         <input id="files" name="files" type="file" multiple required>
-        <div class="hint">Up to {{ max_mb }} MB in total. For images you can choose up to {{ max_images }} files: they are used in the order shown by your file picker.</div></div>
-      <div class="field"><label class="check"><input type="checkbox" name="ocr_text" value="1"><span>For “Images to Word”: read the text with OCR (editable text) instead of placing the pictures</span></label></div>
+        <div class="hint">Up to {{ max_mb }} MB in total, up to {{ max_images }} images.</div></div>
+      <div class="field full"><label class="check"><input type="checkbox" name="ocr_text" value="1"><span>Images to Word: read the text (OCR) instead of placing the pictures</span></label></div>
+      </div>
       <button class="btn btn-primary btn-lg" type="submit">{{ icon('download') }}Convert and download</button>
     </form>
-  </div>
-  <div class="card">
-    <h2>What each one does</h2>
-    <table class="t"><tbody>
-      <tr><td>PDF to Word</td><td class="small muted">Keeps text, images and simple tables. Scanned PDFs are read with OCR (plain text).</td></tr>
-      <tr><td>Word to PDF</td><td class="small muted">Text, headings, lists, tables and pictures. Not headers, footers or text boxes.</td></tr>
-      <tr><td>Images to PDF</td><td class="small muted">One image per A4 page.</td></tr>
-      <tr><td>Images to Word</td><td class="small muted">Pictures as they are, or editable text with OCR.</td></tr>
-      <tr><td>Image to text</td><td class="small muted">OCR, saved as a .txt file.</td></tr>
-      <tr><td>PDF to images</td><td class="small muted">Every page as a PNG in a ZIP (first 100 pages).</td></tr>
-      <tr><td>PDF / Word to text</td><td class="small muted">Plain text without layout.</td></tr>
-    </tbody></table>
-    <p class="muted small mb0">Supported images: PNG, JPG, BMP, GIF, TIFF, WebP. Password-protected files must be unlocked first.</p>
-  </div>
 </div>
 {% endblock %}

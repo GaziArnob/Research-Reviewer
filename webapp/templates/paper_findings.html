@@ -11,7 +11,7 @@
       {% set labels = {'verified': 'Quote verified', 'needs_verification': 'Needs verifying', 'uncertain': 'Uncertain'} %}
       {% for st in states %}<button class="chip" type="button" data-group="state" data-filter="{{ st }}" aria-pressed="false">{{ labels[st] }}</button>{% endfor %}
     </div>
-    <p class="muted small mb0">Showing <strong id="shown-count">{{ items | length }}</strong> of {{ items | length }}. “Quote verified” means the quote exists in the paper; the judgement is still the tool’s.</p>
+    <p class="muted small mb0">Showing <strong id="shown-count">{{ items | length }}</strong> of {{ items | length }}. “Quote verified” only means the quote is in the paper.</p>
   </div>
   <details class="card"><summary>Highlight the evidence in your PDF</summary>
     <p class="muted small">Upload the same PDF again. Every quote used as evidence is highlighted with the finding as a note. The file is not stored.</p>

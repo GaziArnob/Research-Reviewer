@@ -233,7 +233,7 @@ def test_convert_page_and_download(client):
     signup(client)
     page = client.get("/app/convert").text
     assert "Convert to a venue template" in page and "IEEE conference paper" in page and "IEEE journal" in page
-    assert "Do not reformat a manuscript that was sent to you" in page
+    assert "a manuscript sent to you for review is confidential" in page
     csrf = re.search(r'name="csrf" value="([^"]+)"', page).group(1)
     files = {"file": ("my paper.pdf", make_pdf(), "application/pdf")}
     # no CSRF token
@@ -343,3 +343,16 @@ def test_file_converter_page_and_download(client):
     assert not list(web.upload_dir.glob("*.pdf"))                              # nothing is stored
     with db.session() as s:
         assert s.query(db.Event).filter_by(action="file_converted").count() == 1
+
+
+def test_ai_check_uses_the_app_layout_when_signed_in(client, monkeypatch):
+    from core.checks import perplexity
+    monkeypatch.setattr(perplexity, "available", lambda: False)
+    visitor = client.get("/ai-check").text
+    assert "Create your account" not in visitor and 'class="top"' in visitor and 'class="side"' not in visitor
+    signup(client)
+    page = client.get("/ai-check").text
+    assert 'class="side"' in page and "My papers" in page and 'class="top"' not in page   # same shell as the other tools
+    csrf = re.search(r'name="csrf" value="([^"]+)"', page).group(1)
+    r = client.post("/ai-check", data={"csrf": csrf, "text": "word " * 200})
+    assert r.status_code == 200 and 'class="side"' in r.text and "Result" in r.text

@@ -153,3 +153,11 @@ Parse PDF (hidden text removed) → validation → injection scan → preflight 
 ## Deploy
 
 See [DEPLOY.md](DEPLOY.md): the whole stack (web app, PostgreSQL, Ollama, HTTPS) on one free Oracle Cloud server with `docker-compose.prod.yml`.
+
+## Branding
+
+The logo ("neural lens") comes from `brand/neural-lens-source.jpg`. `python scripts/make_logo.py` cuts it into transparent PNGs in `webapp/static/brand/` (light and dark horizontal logos, large mark, app icons) and `webapp/static/favicon.png`. The sidebar always uses the dark logo; the public pages switch with the light/dark theme. To change the logo, replace the source image and run the script again.
+
+## Look and feel
+
+`webapp/static/css/site.css` is the visual layer (dark, Linear-style: pill navigation, gradient buttons with glow, animated headline, a product window that flattens as you scroll, flowing gradient lines, scroll reveals, cursor glow on cards). `static/js/boot.js` and the motion block at the end of `static/js/app.js` drive it. It is presentation only: no route, form or feature depends on it, everything is inline-script and inline-style free (strict CSP), and motion switches off for people who prefer reduced motion. The design follows the general style of modern dark SaaS sites; no code, text or images were copied from any other site.

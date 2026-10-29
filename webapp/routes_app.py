@@ -29,8 +29,8 @@ from webapp.settings import web
 
 router = APIRouter(prefix="/app", dependencies=[Depends(require_user)])
 
-TABS = [("overview", "Overview"), ("findings", "Findings"), ("evidence", "Claims & evidence"),
-        ("literature", "Literature"), ("aicheck", "AI check"), ("ask", "Ask the paper"), ("form", "Review form"), ("activity", "Activity")]
+TABS = [("overview", "Overview"), ("findings", "Findings"), ("evidence", "Claims"),
+        ("literature", "Literature"), ("aicheck", "AI check"), ("ask", "Ask"), ("form", "Review form"), ("activity", "History")]
 PER_PAGE = 15
 
 

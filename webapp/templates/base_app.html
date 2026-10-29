@@ -6,28 +6,30 @@
   <meta name="csrf" content="{{ csrf }}">
   <meta name="robots" content="noindex">
   <title>{% block title %}Dashboard{% endblock %} · {{ brand }}</title>
-  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="/static/favicon.png?v={{ asset_v() }}" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="/static/brand/icon-192.png?v={{ asset_v() }}">
+  <script src="/static/js/boot.js?v={{ asset_v() }}"></script>
   <link rel="stylesheet" href="/static/css/app.css?v={{ asset_v() }}">
+  <link rel="stylesheet" href="/static/css/site.css?v={{ asset_v() }}">
+  <meta name="color-scheme" content="dark"><meta name="theme-color" content="#0d0e12">
 </head>
 <body>
 {% include "_sprite.html" %}
 <div class="shell">
   <aside class="side">
-    <a class="brand" href="/app"><img class="logo" src="/static/logo.svg" alt="">{{ brand }}</a>
+    <a class="brand" href="/app"><img class="logo-wide" src="/static/brand/logo-dark.png?v={{ asset_v() }}" alt="{{ brand }}" width="228" height="40"></a>
     <nav aria-label="App">
       <a href="/app" class="{{ 'active' if path == '/app' }}">{{ icon('home') }}Dashboard</a>
-      <a href="/app/new" class="{{ 'active' if path == '/app/new' }}">{{ icon('upload') }}New review</a>
-      <a href="/app/papers" class="{{ 'active' if path.startswith('/app/papers') }}">{{ icon('list') }}Papers</a>
-      <a href="/app/convert" class="{{ 'active' if path == '/app/convert' }}">{{ icon('clipboard') }}Convert format</a>
+      <a href="/app/papers" class="{{ 'active' if path.startswith('/app/papers') }}">{{ icon('list') }}My papers</a>
+      <div class="nav-label">Tools</div>
+      <a href="/app/convert" class="{{ 'active' if path == '/app/convert' }}">{{ icon('clipboard') }}Journal template</a>
       <a href="/app/files" class="{{ 'active' if path == '/app/files' }}">{{ icon('download') }}File converter</a>
-      <a href="/ai-check" class="{{ 'active' if path == '/ai-check' }}">{{ icon('shield') }}AI check</a>
+      <a href="/ai-check" class="{{ 'active' if path == '/ai-check' }}">{{ icon('shield') }}AI text check</a>
       <div class="nav-label">Account</div>
       <a href="/app/settings" class="{{ 'active' if path.startswith('/app/settings') }}">{{ icon('sliders') }}Settings</a>
       {% if user.role == 'admin' %}<a href="/app/admin" class="{{ 'active' if path.startswith('/app/admin') }}">{{ icon('shield') }}Admin</a>{% endif %}
-      <a href="/trust">{{ icon('book') }}Trust &amp; privacy</a>
     </nav>
-    {% if quota is defined %}<div class="quota">{{ plan_of(user.plan).name }} plan ·
-      {% if quota is none %}unlimited papers{% else %}{{ quota }} paper{{ '' if quota == 1 else 's' }} left this month{% endif %}</div>{% endif %}
+    <a class="btn btn-primary side-new" href="/app/new">{{ icon('upload') }}New review</a>
     <div class="me"><strong>{{ user.name }}</strong><span>{{ user.email }}</span>
       <form method="post" action="/logout">{% from "_macros.html" import csrf_input with context %}{{ csrf_input() }}
         <button class="btn btn-sm" type="submit">{{ icon('logout') }}Sign out</button></form></div>

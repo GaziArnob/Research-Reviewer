@@ -110,3 +110,42 @@
     f.addEventListener("submit", function (ev) { if (!window.confirm(f.getAttribute("data-confirm"))) ev.preventDefault(); });
   });
 })();
+
+// Motion: reveal on scroll, product window tilt, cursor glow on cards. Decoration only; every page works without it.
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var targets = document.querySelectorAll(".reveal, .window, .steps");
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+    targets.forEach(function (el) { io.observe(el); });
+  } else {
+    targets.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  // The product window starts tilted back and flattens as the page scrolls.
+  var win = document.getElementById("product");
+  if (win && !reduce) {
+    var ticking = false;
+    var update = function () {
+      var r = win.getBoundingClientRect(), vh = window.innerHeight || 800;
+      var p = Math.min(1, Math.max(0, 1 - r.top / (vh * 0.85)));  // 0 when it enters, 1 when it is well inside the screen
+      win.style.setProperty("--tilt", (14 * (1 - p)).toFixed(2) + "deg");
+      win.style.setProperty("--lift", (-24 * p).toFixed(1) + "px");
+      ticking = false;
+    };
+    window.addEventListener("scroll", function () { if (!ticking) { ticking = true; window.requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+
+  // A soft light follows the cursor over feature cards.
+  document.querySelectorAll(".feature, .card.glow").forEach(function (card) {
+    card.addEventListener("pointermove", function (ev) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (ev.clientX - r.left) + "px");
+      card.style.setProperty("--my", (ev.clientY - r.top) + "px");
+    });
+  });
+})();

@@ -7,7 +7,7 @@
   {% elif lvl == 'short' %}<span class="badge b-mute">Too short to judge</span>
   {% else %}<span class="badge b-ok">No signal</span>{% endif %}</div>
   {% if lvl == 'short' %}<p class="mb0">The text has {{ report.words }} words. Under {{ report.min_words }} words the statistics mean nothing, so no result is given.</p>
-  {% elif lvl in ('strong', 'moderate') %}<p class="mb0">Many sentences are very predictable to a small language model, which is typical of machine-generated text. It is also seen in some formal or heavily edited human writing, so this is a reason to read the marked sentences carefully, not a verdict.</p>
+  {% elif lvl in ('strong', 'moderate') %}<p class="mb0">Many sentences are very predictable, which is typical of machine-generated text but also of some formal human writing. Not a verdict.</p>
   {% elif lvl == 'style' %}<p class="mb0">Two word-list measures are past their limit. This is a weak hint.</p>
   {% else %}<p class="mb0">The text did not look unusually predictable. This does not prove a human wrote it: paraphrased or edited machine text often passes.</p>{% endif %}
   {% if report.model_missing %}<p class="muted small mt mb0">The language-model files are not installed on this server (models/gpt2), so only the weaker word-list measures were used.</p>{% endif %}
@@ -17,13 +17,13 @@
 <div class="grid grid-2">
   <div class="card"><h3>How predictable the sentences are</h3>
     <div class="stat"><div class="n">{{ '%.0f' | format(report.pred.median_ppl) }}</div><div class="l">median sentence perplexity (lower = more predictable)</div></div>
-    <p class="muted small mb0">Typical human papers: about 38. Texts written by a small language model: about 17.</p></div>
+    <p class="muted small mb0">Human papers: about 38. Small AI model: about 17.</p></div>
   <div class="card"><h3>Very predictable sentences</h3>
     <div class="stat"><div class="n">{{ '%.0f' | format(report.pred.low_share * 100) }}%</div><div class="l">of sentences are below perplexity 30</div></div>
-    <p class="muted small mb0">Typical human papers: about 15%. Machine-written text: about 85%. Measured with {{ report.pred.model }}.</p></div>
+    <p class="muted small mb0">Human papers: about 15%. Small AI model: about 85%.</p></div>
 </div>
 <div class="card"><h3>Sentence view</h3>
-  <p class="muted small"><span class="ai-low">Red</span>: very predictable (perplexity under 20). <span class="ai-mid">Amber</span>: predictable (under 30). Unmarked: ordinary. Only about the first {{ report.pred.sentences }} sentences are scored.</p>
+  <p class="muted small"><span class="ai-low">Red</span> very predictable, <span class="ai-mid">amber</span> predictable.</p>
   <p class="ai-text mb0">{% for s in report.pred.sentence_scores %}<span class="{{ 'ai-low' if s.ppl < 20 else 'ai-mid' if s.ppl < 30 else '' }}" title="perplexity {{ '%.0f' | format(s.ppl) }}">{{ s.text }}</span> {% endfor %}</p>
 </div>
 {% endif %}
@@ -32,10 +32,10 @@
 <div class="grid grid-2">
   <div class="card"><h3>Phrases models overuse</h3>
     <div class="stat"><div class="n">{{ '%.1f' | format(report.marker_density) }}</div><div class="l">per 1,000 words (limit {{ report.density_limit }})</div></div>
-    <p class="muted small mb0">Words such as "delve", "pivotal", "it is important to note". In 78 human-written papers from 2016-17 the typical value was 0.4 and the highest 2.4.</p></div>
+    <p class="muted small mb0">Human papers: about 0.4, at most 2.4.</p></div>
   <div class="card"><h3>Sentence-length variation</h3>
     <div class="stat"><div class="n">{{ '%.2f' | format(report.cv) if report.cv is not none else 'n/a' }}</div><div class="l">flagged if below {{ report.cv_limit }}</div></div>
-    <p class="muted small mb0">Human writing mixes short and long sentences. In the same papers the typical value was 0.75 and the lowest 0.52.</p></div>
+    <p class="muted small mb0">Human papers: about 0.75, at least 0.52.</p></div>
 </div>
 {% if report.sentences_shown %}<div class="card"><h3>Sentences with marker phrases</h3>
   {% for q in report.sentences_shown %}<div class="quote">“{{ q }}”</div>{% endfor %}</div>{% endif %}
