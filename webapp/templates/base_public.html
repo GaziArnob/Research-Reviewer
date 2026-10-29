@@ -7,14 +7,14 @@
   <title>{% block title %}{{ brand }}{% endblock %} · {{ brand }}</title>
   <meta name="description" content="{% block desc %}{{ tagline }}. Checks, evidence-linked comments and venue-ready review forms. You write the review.{% endblock %}">
   <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_v() }}">
 </head>
 <body>
 {% include "_sprite.html" %}
 <header class="top"><div class="in">
   <a class="brand" href="/"><img class="logo" src="/static/logo.svg" alt="">{{ brand }}</a>
   <nav aria-label="Main">
-    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/trust">Trust &amp; privacy</a><a href="/plans">Plans</a>
+    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/ai-check">AI check</a><a href="/trust">Trust &amp; privacy</a><a href="/plans">Plans</a>
   </nav>
   {% if user %}<a class="btn btn-primary btn-sm" href="/app">Open app</a>
   {% else %}<a class="btn btn-ghost btn-sm" href="/login">Sign in</a>{% if allow_signup %}<a class="btn btn-primary btn-sm" href="/signup">Get started</a>{% endif %}{% endif %}
@@ -27,6 +27,6 @@
   <div>© {{ brand }}. The tool assists; the reviewer decides.</div>
   <div><a href="/trust">Trust &amp; privacy</a><a href="/legal/privacy">Privacy</a><a href="/legal/terms">Terms</a><a href="mailto:{{ support }}">Contact</a></div>
 </div></footer>
-<script src="/static/js/app.js" defer></script>
+<script src="/static/js/app.js?v={{ asset_v() }}" defer></script>
 </body>
 </html>

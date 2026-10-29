@@ -1,0 +1,21 @@
+{% extends "base_public.html" %}
+{% from "_macros.html" import alert, csrf_input with context %}
+{% block title %}AI text check{% endblock %}
+{% block content %}
+<div class="wrap"><div class="prose">
+  <h1>AI text check</h1>
+  <p class="muted">Paste any English text (at least 150 words; more is more reliable) and see how predictable its sentences are to a small language model, sentence by sentence. No account is needed. The text is analysed in memory and is never stored or logged.</p>
+  {{ alert('warn', 'This is a weak hint, not proof. It cannot tell who wrote a text. Style-based detection often wrongly flags human writers, especially people writing in a second language, and edited AI text passes unnoticed. Never use it alone to accuse anyone.') }}
+  {% if error %}{{ alert('bad', error) }}{% endif %}
+
+  <form method="post" action="/ai-check">
+    {{ csrf_input() }}
+    <div class="field"><label for="text">Text to check</label>
+      <textarea id="text" name="text" rows="14" required>{{ text }}</textarea>
+      <div class="hint">Up to about 9,000 words. Put in the body text only, without the reference list.</div></div>
+    <button class="btn btn-primary btn-lg" type="submit">Check the text</button>
+  </form>
+
+  {% if report %}{% include "_aireport.html" %}{% endif %}
+</div></div>
+{% endblock %}

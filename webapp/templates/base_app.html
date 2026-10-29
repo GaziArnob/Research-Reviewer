@@ -7,7 +7,7 @@
   <meta name="robots" content="noindex">
   <title>{% block title %}Dashboard{% endblock %} · {{ brand }}</title>
   <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_v() }}">
 </head>
 <body>
 {% include "_sprite.html" %}
@@ -19,6 +19,7 @@
       <a href="/app/new" class="{{ 'active' if path == '/app/new' }}">{{ icon('upload') }}New review</a>
       <a href="/app/papers" class="{{ 'active' if path.startswith('/app/papers') }}">{{ icon('list') }}Papers</a>
       <a href="/app/convert" class="{{ 'active' if path == '/app/convert' }}">{{ icon('clipboard') }}Convert format</a>
+      <a href="/ai-check" class="{{ 'active' if path == '/ai-check' }}">{{ icon('shield') }}AI check</a>
       <div class="nav-label">Account</div>
       <a href="/app/settings" class="{{ 'active' if path.startswith('/app/settings') }}">{{ icon('sliders') }}Settings</a>
       {% if user.role == 'admin' %}<a href="/app/admin" class="{{ 'active' if path.startswith('/app/admin') }}">{{ icon('shield') }}Admin</a>{% endif %}
@@ -35,6 +36,6 @@
     {% block content %}{% endblock %}
   </div>
 </div>
-<script src="/static/js/app.js" defer></script>
+<script src="/static/js/app.js?v={{ asset_v() }}" defer></script>
 </body>
 </html>

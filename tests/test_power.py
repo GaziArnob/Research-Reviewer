@@ -206,3 +206,48 @@ def test_table_rebuild_from_word_positions():
     page.insert_text((72, 200), "Some ordinary sentence after the table that is not part of it at all.", fontsize=10)
     grid = recover_tables(doc.tobytes())[2]
     assert grid == [list(r) for r in rows]
+
+
+def test_ai_style_signal_needs_two_signals_and_never_claims_authorship(monkeypatch):
+    from core.checks import perplexity
+    from core.checks.ai_text import run_ai_text
+    monkeypatch.setattr(perplexity, "available", lambda: False)  # word-list fallback, independent of the model files
+    ai_like = " ".join(["Furthermore, it is important to note that this pivotal approach underscores a multifaceted paradigm shift in the field today."] * 70)
+    f = run_ai_text(_paper(ai_like))
+    assert len(f) == 1 and f[0].kind == "flag" and f[0].status == "uncertain" and "NOT evidence" in f[0].text
+    assert f[0].evidence and "AI-generated" not in f[0].text
+    varied = " ".join(f"We train model {i} on a split of the data. " + "Results vary a lot across the runs we tried here, with " * (i % 4) +
+                      "Accuracy was {} percent.".format(60 + i % 17) for i in range(120))
+    assert run_ai_text(_paper(varied)) == []                      # ordinary varied text
+    assert run_ai_text(_paper("Furthermore, it is important to note this pivotal point. " * 5)) == []  # too short to judge
+
+
+def test_predictability_levels_and_sentence_view(monkeypatch):
+    from core.checks import ai_text, perplexity
+
+    def fake(ppl):
+        sents = [{"text": f"Sentence number {i} about the method.", "ppl": ppl + (i % 3), "top10": 0.8, "tokens": 9} for i in range(30)]
+        return lambda text, max_tokens=3000: {"sentences": sents, "doc_ppl": ppl, "doc_top10": 0.7, "tokens": 300}
+
+    monkeypatch.setattr(perplexity, "available", lambda: True)
+    monkeypatch.setattr(perplexity, "model_name", lambda: "fake.onnx")
+    text = "word " * 200
+    monkeypatch.setattr(perplexity, "score_text", fake(15))
+    assert ai_text.predictability(text)["level"] == "strong" and ai_text.full_report(text)["level"] == "strong"
+    monkeypatch.setattr(perplexity, "score_text", fake(26))
+    assert ai_text.predictability(text)["level"] == "moderate"
+    monkeypatch.setattr(perplexity, "score_text", fake(45))
+    assert ai_text.predictability(text)["level"] == "none" and ai_text.full_report(text)["level"] == "none"
+    assert ai_text.full_report("too short")["level"] == "short"
+    monkeypatch.setattr(perplexity, "score_text", fake(15))
+    found = ai_text.run_ai_text(_paper(text))
+    assert found and "NOT proof" in found[0].text and found[0].status == "uncertain" and found[0].evidence
+
+
+def test_perplexity_scorer_on_real_model_when_installed():
+    from core.checks import perplexity
+    if not perplexity.available():
+        pytest.skip("models/gpt2 not installed")
+    repeated = perplexity.score_text("The cat sat on the mat and looked at the dog across the street. " * 8)
+    odd = perplexity.score_text("Quartz lemons negotiate purple tuesdays beneath yodelling carburettors, while seven brittle clocks forgot Antarctica. " * 4)
+    assert repeated and odd and repeated["doc_ppl"] < 5 < odd["doc_ppl"]

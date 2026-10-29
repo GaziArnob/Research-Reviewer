@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from webapp.db import User, log_event, utcnow
 from webapp.deps import csrf_protect, current_user, flash, get_db, render
 from webapp.plans import DEFAULT_PLAN
-from webapp.security import hash_password, password_problem, throttle, verify_password
+from webapp.security import LoginThrottle, hash_password, password_problem, throttle, verify_password
 from webapp.settings import web
 
 router = APIRouter()
@@ -27,6 +27,30 @@ def _safe_next(value: Optional[str]) -> str:
 @router.api_route("/", methods=["GET", "HEAD"])
 def landing(request: Request, user: Optional[User] = Depends(current_user)):
     return render(request, "landing.html")
+
+
+_ai_limit = LoginThrottle(limit=20, window=600)  # 20 checks per 10 minutes per address; the text is never stored or logged
+MAX_AI_CHARS = 60_000
+
+
+@router.get("/ai-check")
+def ai_check_form(request: Request, user: Optional[User] = Depends(current_user)):
+    return render(request, "ai_check.html", text="", report=None, error="")
+
+
+@router.post("/ai-check", dependencies=[Depends(csrf_protect)])
+def ai_check_run(request: Request, text: str = Form(""), user: Optional[User] = Depends(current_user)):
+    from core.checks import ai_text
+    key = request.client.host if request.client else "?"
+    if _ai_limit.blocked(key):
+        return render(request, "ai_check.html", 429, text=text[:MAX_AI_CHARS], report=None, error="Too many checks from this address. Wait a few minutes.")
+    _ai_limit.fail(key)  # counts every request
+    if len(text) > MAX_AI_CHARS:
+        return render(request, "ai_check.html", 413, text=text[:MAX_AI_CHARS], report=None,
+                      error=f"The text is longer than {MAX_AI_CHARS:,} characters (about 9,000 words). Paste a shorter part.")
+    if not text.strip():
+        return render(request, "ai_check.html", 400, text="", report=None, error="Paste some text first.")
+    return render(request, "ai_check.html", text=text, report=ai_text.full_report(text), error="")
 
 
 @router.get("/trust")

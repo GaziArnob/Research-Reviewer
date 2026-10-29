@@ -131,3 +131,7 @@ details > summary { cursor: pointer; font-weight: 600; } details[open] > summary
 .bars { display: grid; grid-template-columns: 52px 1fr 28px; gap: .3rem .6rem; align-items: center; font-size: .86rem; }
 
 .main { min-width: 0; } .page-head > div { min-width: 0; } .page-head h1 { overflow-wrap: anywhere; }
+
+.ai-text { line-height: 1.8; }
+.ai-low { background: var(--bad-soft); border-bottom: 2px solid var(--bad); border-radius: 3px; }
+.ai-mid { background: var(--warn-soft); border-bottom: 2px solid var(--warn); border-radius: 3px; }

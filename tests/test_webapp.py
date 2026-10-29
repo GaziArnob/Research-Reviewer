@@ -58,7 +58,7 @@ def paper_id(resp) -> int:
 
 
 def test_public_pages_render_and_security_headers(client):
-    for path in ("/", "/trust", "/plans", "/legal/privacy", "/legal/terms", "/login", "/signup"):
+    for path in ("/", "/trust", "/plans", "/legal/privacy", "/legal/terms", "/login", "/signup", "/ai-check"):
         r = client.get(path)
         assert r.status_code == 200, path
         assert "default-src 'self'" in r.headers["content-security-policy"] and r.headers["x-frame-options"] == "DENY"
@@ -114,7 +114,7 @@ def test_upload_review_pages_exports_and_delete(client):
     page = client.get(f"/app/papers/{pid}")
     assert page.status_code == 200 and "Ready" in page.text and "A Neural Ranking Study" in page.text
     assert "Reporting checklist" in page.text and "Draft scores" not in page.text
-    for tab in ("findings", "evidence", "literature", "ask", "form", "activity"):
+    for tab in ("findings", "evidence", "literature", "aicheck", "ask", "form", "activity"):
         assert client.get(f"/app/papers/{pid}/{tab}").status_code == 200, tab
     assert "Reproducibility" in client.get(f"/app/papers/{pid}/findings").text or "reproducibility" in client.get(f"/app/papers/{pid}/findings").text
     form = client.get(f"/app/papers/{pid}/form?venue=neurips2025").text
@@ -304,3 +304,24 @@ def test_feedback_votes_and_annotated_pdf(client):
         bh = {"X-CSRF-Token": token(bob, "/app"), "Content-Type": "application/json"}
         assert bob.post(f"/app/papers/{pid}/feedback", content=json.dumps({"finding_id": fid, "verdict": 1}), headers=bh).status_code == 404
         assert bob.post(f"/app/papers/{pid}/annotate", data={"csrf": token(bob, "/app")}, files={"file": ("p.pdf", pdf, "application/pdf")}).status_code == 404
+
+
+def test_public_ai_check_needs_no_account_but_needs_csrf_and_is_rate_limited(client, monkeypatch):
+    from core.checks import perplexity
+    from webapp import routes_public
+    monkeypatch.setattr(perplexity, "available", lambda: False)
+    routes_public._ai_limit.fails.clear()
+    ai_like = " ".join(["Furthermore, it is important to note that this pivotal approach underscores a multifaceted paradigm shift."] * 80)
+    assert client.post("/ai-check", data={"text": ai_like}).status_code == 403            # no CSRF token
+    csrf = token(client, "/ai-check")
+    r = client.post("/ai-check", data={"csrf": csrf, "text": ai_like})
+    assert r.status_code == 200 and "Weak signal (word list)" in r.text and "Never use it alone" in r.text
+    short = client.post("/ai-check", data={"csrf": csrf, "text": "A few words only."})
+    assert "Too short to judge" in short.text
+    assert client.post("/ai-check", data={"csrf": csrf, "text": "x" * 70_000}).status_code == 413
+    assert client.post("/ai-check", data={"csrf": csrf, "text": ""}).status_code == 400
+    routes_public._ai_limit.fails.clear()
+    for _ in range(20):
+        client.post("/ai-check", data={"csrf": csrf, "text": "short"})
+    assert client.post("/ai-check", data={"csrf": csrf, "text": "short"}).status_code == 429
+    routes_public._ai_limit.fails.clear()

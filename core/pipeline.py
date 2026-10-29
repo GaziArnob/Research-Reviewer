@@ -2,6 +2,7 @@ from typing import Callable, Optional
 
 from core.analysis.literature import publication_trends, uncited_similar
 from core.checks.injection import scan_injection
+from core.checks.ai_text import run_ai_text
 from core.checks.completeness import run_completeness
 from core.checks.methodology import run_consistency, run_methodology
 from core.checks.preflight import run_preflight
@@ -22,7 +23,7 @@ from core.retrieval.related import find_related
 from core.storage.cache import Cache, audit, make_key
 from core.storage.papers import register_paper
 
-STEP_VERSION = "4"  # bump when a step's logic changes so old cached results are not reused
+STEP_VERSION = "5"  # bump when a step's logic changes so old cached results are not reused
 
 
 def _cached(cache: Cache, sha: str, step: str, compute: Callable[[], dict], log: list[str]) -> dict:
@@ -105,6 +106,7 @@ def run_pipeline(pdf_bytes: bytes, filename: str = "paper.pdf", *,
     local("reproducibility", run_reproducibility)
     local("statistics", run_statistics)
     local("writing", run_writing_checks)
+    local("ai_text", run_ai_text)
     local("methodology", run_methodology)
     local("consistency", run_consistency)
     result.completeness = _cached(cache, sha, "completeness", lambda: run_completeness(parsed), log)

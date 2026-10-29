@@ -28,7 +28,7 @@ from webapp.settings import web
 router = APIRouter(prefix="/app", dependencies=[Depends(require_user)])
 
 TABS = [("overview", "Overview"), ("findings", "Findings"), ("evidence", "Claims & evidence"),
-        ("literature", "Literature"), ("ask", "Ask the paper"), ("form", "Review form"), ("activity", "Activity")]
+        ("literature", "Literature"), ("aicheck", "AI check"), ("ask", "Ask the paper"), ("form", "Review form"), ("activity", "Activity")]
 PER_PAGE = 15
 
 
@@ -229,6 +229,26 @@ def literature(request: Request, sub_id: int, user: User = Depends(require_user)
     ctx.update(related_findings=related_findings, related_years=trends.get("related_by_year") or {},
                ref_years=trends.get("references_by_year") or {})
     return render(request, "paper_literature.html", **ctx)
+
+
+@router.get("/papers/{sub_id}/aicheck")
+def ai_check(request: Request, sub_id: int, user: User = Depends(require_user), s: Session = Depends(get_db)):
+    from core.checks import ai_text
+    ctx = _paper(request, s, user, sub_id, "aicheck")
+    sub = ctx["sub"]
+    parsed = get_parsed(jobs.cache(), sub.sha256) if sub.sha256 and sub.status == "done" else None
+    report = None
+    if parsed is not None:
+        whole = ai_text.full_report(parsed.body_text)
+        per_section = []
+        for sec in parsed.sections:
+            if sec.name.lower() in ("references", "front matter"):
+                continue
+            a = ai_text.analyse(sec.text)
+            if a["words"] >= 150:
+                per_section.append({"name": sec.name, "words": a["words"], "density": a["marker_density"], "hits": len(a["marker_sentences"])})
+        report = dict(whole, per_section=per_section)
+    return render(request, "paper_aicheck.html", **ctx, report=report)
 
 
 @router.get("/papers/{sub_id}/ask")

@@ -1,0 +1,16 @@
+{% extends "paper_base.html" %}
+{% from "_macros.html" import icon, alert %}
+{% block tab %}
+{% if report %}
+  {{ alert('warn', 'This is a hint, not an AI detector you can rely on. It cannot tell who wrote a text. Detectors like this often wrongly flag human authors, especially people writing in a second language, and edited or paraphrased machine text passes unnoticed. Never use it alone to judge authors.') }}
+  {% include "_aireport.html" %}
+  {% if report.per_section %}
+  <div class="card"><h3>Word-list measure by section</h3>
+    <div class="table-wrap"><table class="t"><thead><tr><th>Section</th><th>Words</th><th>Marker phrases per 1,000 words</th><th>Sentences with a marker</th></tr></thead><tbody>
+    {% for s in report.per_section %}<tr><td>{{ s.name }}</td><td>{{ s.words }}</td><td>{{ '%.1f' | format(s.density) }}</td><td>{{ s.hits }}</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  {% endif %}
+{% else %}
+  <div class="empty">The AI check is available once the paper has been processed.</div>
+{% endif %}
+{% endblock %}

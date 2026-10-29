@@ -37,7 +37,13 @@ def _ago(value: Optional[datetime]) -> str:
 
 templates.env.filters["dt"] = _dt
 templates.env.filters["ago"] = _ago
-templates.env.globals.update(brand=web.brand, tagline=web.tagline, plans=PLANS, plan_of=plan_of)
+def _asset_version() -> str:
+    """Changes whenever the CSS or JS file changes, so browsers never keep a stale copy after an update."""
+    static = TEMPLATE_DIR.parent / "static"
+    return str(int(max((f.stat().st_mtime for f in (static / "css" / "app.css", static / "js" / "app.js") if f.exists()), default=0)))
+
+
+templates.env.globals.update(brand=web.brand, tagline=web.tagline, plans=PLANS, plan_of=plan_of, asset_v=_asset_version)
 
 
 def get_db() -> Iterator[Session]:

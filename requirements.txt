@@ -16,3 +16,4 @@ jinja2
 python-multipart
 itsdangerous
 httpx
+tokenizers

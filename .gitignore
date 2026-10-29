@@ -16,3 +16,4 @@ tools/
 data/*.db
 data/calibration.json
 .env.prod
+models/
