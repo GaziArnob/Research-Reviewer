@@ -17,3 +17,5 @@ python-multipart
 itsdangerous
 httpx
 tokenizers
+pdf2docx
+mammoth

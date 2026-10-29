@@ -325,3 +325,21 @@ def test_public_ai_check_needs_no_account_but_needs_csrf_and_is_rate_limited(cli
         client.post("/ai-check", data={"csrf": csrf, "text": "short"})
     assert client.post("/ai-check", data={"csrf": csrf, "text": "short"}).status_code == 429
     routes_public._ai_limit.fails.clear()
+
+
+def test_file_converter_page_and_download(client):
+    assert client.get("/app/files").status_code == 303                      # signed-out users go to sign in
+    signup(client)
+    page = client.get("/app/files").text
+    assert "File converter" in page and "PDF to Word" in page
+    csrf = re.search(r'name="csrf" value="([^"]+)"', page).group(1)
+    pdf = make_pdf()
+    assert client.post("/app/files", data={"kind": "pdf-text"}, files={"files": ("a.pdf", pdf, "application/pdf")}).status_code == 403
+    r = client.post("/app/files", data={"csrf": csrf, "kind": "pdf-text"}, files={"files": ("a.pdf", pdf, "application/pdf")})
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/plain") and "attachment" in r.headers["content-disposition"]
+    assert len(r.content) > 100
+    bad = client.post("/app/files", data={"csrf": csrf, "kind": "docx-pdf"}, files={"files": ("a.pdf", pdf, "application/pdf")})
+    assert bad.status_code == 303 and "needs" in client.get("/app/files").text
+    assert not list(web.upload_dir.glob("*.pdf"))                              # nothing is stored
+    with db.session() as s:
+        assert s.query(db.Event).filter_by(action="file_converted").count() == 1

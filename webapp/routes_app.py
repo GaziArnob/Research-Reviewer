@@ -4,6 +4,7 @@ from collections import Counter
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from starlette.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
@@ -13,6 +14,7 @@ from core.assistant.agent import answer_question
 from core.ingest.loader import sha256_of
 from core.convert.bundle import SOURCE_SUFFIXES, ConversionError, convert_pdf, convert_source
 from core.convert.templates import list_paper_templates
+from core.fileconv import convert as fileconv
 from core.ingest.loader import _ARXIV_ID
 from core.llm.router import get_llm
 from core.pipeline import get_parsed
@@ -385,6 +387,42 @@ def delete_account(request: Request, password: str = Form(""), confirm: str = Fo
     s.delete(user)
     request.session.clear()
     return RedirectResponse("/", status_code=303)
+
+
+# ---------------------------------------------------------------- general file converter (PDF, Word, images, text)
+@router.get("/files")
+def files_page(request: Request, user: User = Depends(require_user)):
+    return render(request, "files.html", conversions=fileconv.CONVERSIONS, max_mb=web.max_upload_mb, max_images=fileconv.MAX_IMAGES)
+
+
+@router.post("/files", dependencies=[Depends(csrf_protect)])
+async def files_convert(request: Request, kind: str = Form(""), ocr_text: str = Form(""), files: list[UploadFile] = File(None),
+                        user: User = Depends(require_user), s: Session = Depends(get_db)):
+    """Converted in memory and returned at once; nothing is stored."""
+    def back(msg: str):
+        flash(request, "bad", msg)
+        return RedirectResponse("/app/files", status_code=303)
+
+    uploads = [f for f in (files or []) if f.filename]
+    if not uploads:
+        return back("Choose a file.")
+    limit = web.max_upload_mb * 1024 * 1024
+    data, total = [], 0
+    for f in uploads[:fileconv.MAX_IMAGES + 1]:
+        blob = await f.read(limit + 1)
+        total += len(blob)
+        if total > limit:
+            return back(f"The files together are larger than {web.max_upload_mb} MB.")
+        data.append((f.filename, blob))
+    try:
+        result = await run_in_threadpool(fileconv.run, kind, data, ocr_text == "1")
+    except fileconv.ConvertError as exc:
+        return back(str(exc))
+    except Exception:  # noqa: BLE001 - a broken file must not become a server error page
+        return back("This file could not be converted. It may be damaged or very unusual.")
+    log_event(s, user.id, "file_converted", None, {"kind": kind, "files": len(data)})
+    headers = {"Content-Disposition": f'attachment; filename="{result.filename}"', "X-Convert-Notes": " ".join(result.notes)[:300].encode("ascii", "ignore").decode()}
+    return Response(result.data, media_type=result.media_type, headers=headers)
 
 
 # ---------------------------------------------------------------- convert a manuscript to a venue template
